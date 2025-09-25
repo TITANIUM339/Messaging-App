@@ -1,13 +1,29 @@
 import cors from "cors";
 import "dotenv/config";
-import express from "express";
+import express, {
+    type NextFunction,
+    type Request,
+    type Response,
+} from "express";
 import helmet from "helmet";
+import createHttpError from "http-errors";
 
 const app = express();
 
 app.use(helmet());
 app.use(express.json());
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
+
+app.use((_req, _res, next) => next(createHttpError(404)));
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    const code = createHttpError.isHttpError(err) ? err.statusCode : 500;
+
+    if (code >= 500) {
+        console.error(err);
+    }
+
+    res.sendStatus(code);
+});
 
 const PORT = process.env.PORT || 3000;
 
