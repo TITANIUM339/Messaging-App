@@ -1,0 +1,41 @@
+{
+    "name": "server",
+    "version": "0.0.0",
+    "private": true,
+    "license": "ISC",
+    "author": "TITANIUM339",
+    "type": "module",
+    "main": "./src/app.ts",
+    "scripts": {
+        "start": "tsx ./src/app.ts",
+        "watch": "tsx watch ./src/app.ts",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint ."
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.36.0",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.3",
+        "@types/node": "^24.5.2",
+        "eslint": "^9.36.0",
+        "globals": "^14.0.0",
+        "tsx": "^4.20.5",
+        "typescript": "^5.9.2",
+        "typescript-eslint": "^8.44.1"
+    },
+    "dependencies": {
+        "bcrypt": "^6.0.0",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
+        "dotenv": "^17.2.2",
+        "express": "^5.1.0",
+        "helmet": "^8.1.0",
+        "http-errors": "^2.0.0",
+        "jsonwebtoken": "^9.0.2",
+        "passport": "^0.7.0",
+        "passport-jwt": "^4.0.1",
+        "passport-local": "^1.0.0",
+        "socket.io": "^4.8.1",
+        "zod": "^4.1.11"
+    }
+}

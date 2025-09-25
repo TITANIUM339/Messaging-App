@@ -1,0 +1,28 @@
+{
+    "name": "messaging-app",
+    "version": "0.0.0",
+    "private": true,
+    "homepage": "https://github.com/TITANIUM339/Messaging-App#readme",
+    "bugs": {
+        "url": "https://github.com/TITANIUM339/Messaging-App/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TITANIUM339/Messaging-App.git"
+    },
+    "license": "ISC",
+    "author": "TITANIUM339",
+    "type": "module",
+    "workspaces": [
+        "apps/*"
+    ],
+    "scripts": {
+        "format": "prettier --write .",
+        "check": "prettier --check ."
+    },
+    "devDependencies": {
+        "eslint-config-prettier": "^10.1.8",
+        "prettier": "3.6.2",
+        "prettier-plugin-tailwindcss": "^0.6.14"
+    }
+}
