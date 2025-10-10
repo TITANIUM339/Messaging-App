@@ -1,4 +1,9 @@
 import "dotenv/config";
+import {
+    accessTokenStrategy,
+    localStrategy,
+    refreshTokenStrategy,
+} from "@middleware/passport";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, {
@@ -8,6 +13,11 @@ import express, {
 } from "express";
 import helmet from "helmet";
 import createHttpError from "http-errors";
+import passport from "passport";
+
+passport.use("local", localStrategy);
+passport.use("refreshToken", refreshTokenStrategy);
+passport.use("accessToken", accessTokenStrategy);
 
 const app = express();
 
