@@ -6,6 +6,7 @@ import {
 } from "@middleware/passport";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { lte } from "drizzle-orm";
 import express, {
     type NextFunction,
     type Request,
@@ -14,7 +15,22 @@ import express, {
 import helmet from "helmet";
 import createHttpError from "http-errors";
 import passport from "passport";
+import db from "./db";
+import { refreshTokens } from "./db/schema";
 import routes from "./routes";
+
+setInterval(
+    async () => {
+        try {
+            await db
+                .delete(refreshTokens)
+                .where(lte(refreshTokens.expiresAt, new Date()));
+        } catch (error) {
+            console.error(error);
+        }
+    },
+    5 * 60 * 1000,
+);
 
 passport.use("local", localStrategy);
 passport.use("refreshToken", refreshTokenStrategy);
