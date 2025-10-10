@@ -21,6 +21,12 @@
         "noEmit": true,
 
         /* If your code doesn't run in the DOM: */
-        "lib": ["es2022"]
+        "lib": ["es2022"],
+
+        "paths": {
+            "@controllers/*": ["./src/controllers/*"],
+            "@middleware/*": ["./src/middleware/*"],
+            "@lib/*": ["./src/lib/*"]
+        }
     }
 }
