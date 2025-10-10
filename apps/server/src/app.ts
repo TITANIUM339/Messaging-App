@@ -1,5 +1,6 @@
-import cors from "cors";
 import "dotenv/config";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import express, {
     type NextFunction,
     type Request,
@@ -12,7 +13,8 @@ const app = express();
 
 app.use(helmet());
 app.use(express.json());
-app.use(cors({ origin: process.env.CORS_ORIGIN }));
+app.use(cookieParser());
+app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 
 app.use((_req, _res, next) => next(createHttpError(404)));
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
