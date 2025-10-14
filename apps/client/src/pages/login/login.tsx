@@ -36,6 +36,7 @@ export default function Login() {
                                 type="text"
                                 name="username"
                                 autoComplete="username"
+                                autoFocus
                                 id={id1}
                                 maxLength={32}
                                 spellCheck={false}
