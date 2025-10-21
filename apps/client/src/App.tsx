@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import Login from "./pages/login";
+import Login, { loginAction } from "./pages/login";
 import Signup from "./pages/signup";
 
 export default function App() {
@@ -8,6 +8,7 @@ export default function App() {
         {
             path: "/login",
             Component: Login,
+            action: loginAction,
         },
         {
             path: "/signup",
