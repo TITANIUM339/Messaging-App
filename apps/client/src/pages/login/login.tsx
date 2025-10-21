@@ -1,10 +1,12 @@
 import { useId } from "react";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { Form, Link } from "react-router";
+import { Form, Link, useActionData } from "react-router";
 
 export default function Login() {
     const id1 = useId(),
         id2 = useId();
+
+    const data = useActionData<unknown>();
 
     return (
         <div className="grid min-h-dvh grid-rows-[min-content_1fr] bg-zinc-900 p-2 text-zinc-100">
@@ -42,10 +44,12 @@ export default function Login() {
                                 spellCheck={false}
                                 required
                             />
-                            <div className="flex items-center gap-1 text-sm text-red-300">
-                                <BsExclamationCircleFill />
-                                <p>Username or password is invalid.</p>
-                            </div>
+                            {data ? (
+                                <div className="flex items-center gap-1 text-sm text-red-300">
+                                    <BsExclamationCircleFill />
+                                    <p>Username or password is invalid.</p>
+                                </div>
+                            ) : null}
                         </div>
                         <div className="flex flex-col gap-2">
                             <label
@@ -62,10 +66,12 @@ export default function Login() {
                                 id={id2}
                                 required
                             />
-                            <div className="flex items-center gap-1 text-sm text-red-300">
-                                <BsExclamationCircleFill />
-                                <p>Username or password is invalid.</p>
-                            </div>
+                            {data ? (
+                                <div className="flex items-center gap-1 text-sm text-red-300">
+                                    <BsExclamationCircleFill />
+                                    <p>Username or password is invalid.</p>
+                                </div>
+                            ) : null}
                         </div>
                         <button
                             className="rounded-lg border border-indigo-400 bg-indigo-500 p-2 font-medium text-white transition-colors hover:cursor-pointer hover:border-indigo-500 hover:bg-indigo-600"
