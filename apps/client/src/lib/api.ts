@@ -1,8 +1,4 @@
-import * as z from "zod";
-
-const AccessToken = z.object({
-    accessToken: z.jwt(),
-});
+import { AccessToken } from "./schema";
 
 class Api {
     #apiURL;

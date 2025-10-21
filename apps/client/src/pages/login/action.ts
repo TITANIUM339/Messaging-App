@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/only-throw-error */
 import { redirect, type ActionFunctionArgs } from "react-router";
 import api from "../../lib/api";
-import * as z from "zod";
-
-const Login = z.object({
-    username: z.string(),
-    password: z.string(),
-});
+import { Login } from "../../lib/schema";
 
 export default async function action({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
@@ -25,7 +20,7 @@ export default async function action({ request }: ActionFunctionArgs) {
         result.data.password,
     );
 
-    if (response?.status === 401) {
+    if (response?.status === 401 || response?.status == 400) {
         return response;
     }
 
