@@ -47,7 +47,7 @@ export default function Login() {
                             {data ? (
                                 <div className="flex items-center gap-1 text-sm text-red-300">
                                     <BsExclamationCircleFill />
-                                    <p>Username or password is invalid.</p>
+                                    <p>Username or password is invalid</p>
                                 </div>
                             ) : null}
                         </div>
@@ -69,7 +69,7 @@ export default function Login() {
                             {data ? (
                                 <div className="flex items-center gap-1 text-sm text-red-300">
                                     <BsExclamationCircleFill />
-                                    <p>Username or password is invalid.</p>
+                                    <p>Username or password is invalid</p>
                                 </div>
                             ) : null}
                         </div>
