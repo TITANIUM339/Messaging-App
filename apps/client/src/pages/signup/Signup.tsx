@@ -1,10 +1,16 @@
 import { useId } from "react";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { Form, Link } from "react-router";
+import { Form, Link, useActionData } from "react-router";
+import * as z from "zod";
+import { Login } from "../../lib/schema";
+
+type TreeifiedError = ReturnType<typeof z.treeifyError<z.infer<typeof Login>>>;
 
 export default function Signup() {
     const id1 = useId(),
         id2 = useId();
+
+    const data = useActionData<TreeifiedError>();
 
     return (
         <div className="grid min-h-dvh grid-rows-[min-content_1fr] bg-zinc-900 p-2 text-zinc-100">
@@ -39,10 +45,12 @@ export default function Signup() {
                                 spellCheck={false}
                                 required
                             />
-                            <div className="flex items-center gap-1 text-sm text-red-300">
-                                <BsExclamationCircleFill />
-                                <p>Username is invalid.</p>
-                            </div>
+                            {data?.properties?.username ? (
+                                <div className="flex items-center gap-1 text-sm text-red-300">
+                                    <BsExclamationCircleFill />
+                                    <p>{data.properties.username.errors[0]}</p>
+                                </div>
+                            ) : null}
                         </div>
                         <div className="flex flex-col gap-2">
                             <label
@@ -59,10 +67,12 @@ export default function Signup() {
                                 id={id2}
                                 required
                             />
-                            <div className="flex items-center gap-1 text-sm text-red-300">
-                                <BsExclamationCircleFill />
-                                <p>Password is invalid.</p>
-                            </div>
+                            {data?.properties?.password ? (
+                                <div className="flex items-center gap-1 text-sm text-red-300">
+                                    <BsExclamationCircleFill />
+                                    <p>{data.properties.password.errors[0]}</p>
+                                </div>
+                            ) : null}
                         </div>
                         <button
                             className="rounded-lg border border-indigo-400 bg-indigo-500 p-2 font-medium text-white transition-colors hover:cursor-pointer hover:border-indigo-500 hover:bg-indigo-600"
