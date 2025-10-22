@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import Login, { loginAction } from "./pages/login";
-import Signup from "./pages/signup";
+import Signup, { signupAction } from "./pages/signup";
 
 export default function App() {
     const router = createBrowserRouter([
@@ -13,6 +13,7 @@ export default function App() {
         {
             path: "/signup",
             Component: Signup,
+            action: signupAction,
         },
     ]);
 
