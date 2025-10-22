@@ -38,7 +38,7 @@ export default {
         const result = await User.safeParseAsync(req.body);
 
         if (!result.success) {
-            res.status(400).json(result.error.issues);
+            res.status(400).json(z.treeifyError(result.error));
 
             return;
         }
