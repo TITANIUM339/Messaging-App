@@ -1,7 +1,9 @@
 import { useId } from "react";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { Form, Link, useActionData } from "react-router";
+import { Form, Link, useActionData, useNavigation } from "react-router";
 import * as z from "zod";
+import Button from "../../components/Button";
+import Spinner from "../../components/Spinner";
 import { Login } from "../../lib/schema";
 
 type TreeifiedError = ReturnType<typeof z.treeifyError<z.infer<typeof Login>>>;
@@ -11,6 +13,8 @@ export default function Signup() {
         id2 = useId();
 
     const data = useActionData<TreeifiedError>();
+
+    const navigation = useNavigation();
 
     return (
         <div className="grid min-h-dvh grid-rows-[min-content_1fr] bg-zinc-900 p-2 text-zinc-100">
@@ -74,12 +78,17 @@ export default function Signup() {
                                 </div>
                             ) : null}
                         </div>
-                        <button
-                            className="rounded-lg border border-indigo-400 bg-indigo-500 p-2 font-medium text-white transition-colors hover:cursor-pointer hover:border-indigo-500 hover:bg-indigo-600"
+                        <Button
+                            className="flex justify-center"
                             type="submit"
+                            disabled={navigation.state !== "idle"}
                         >
-                            Sign Up
-                        </button>
+                            {navigation.state !== "idle" ? (
+                                <Spinner size={24} />
+                            ) : (
+                                "Sign Up"
+                            )}
+                        </Button>
                     </Form>
                     <p className="mt-2 text-zinc-400">
                         Already have an account?{" "}
