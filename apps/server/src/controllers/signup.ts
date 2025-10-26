@@ -13,16 +13,12 @@ const User = z.object({
         .max(32, { abort: true })
         .refine(
             async (data) => {
-                try {
-                    const [user] = await db
-                        .select()
-                        .from(users)
-                        .where(eq(users.username, data));
+                const [user] = await db
+                    .select()
+                    .from(users)
+                    .where(eq(users.username, data));
 
-                    if (user) {
-                        return false;
-                    }
-                } catch {
+                if (user) {
                     return false;
                 }
 
