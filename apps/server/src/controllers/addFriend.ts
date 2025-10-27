@@ -2,12 +2,7 @@ import { eq, sql } from "drizzle-orm";
 import type { Request, Response } from "express";
 import * as z from "zod";
 import db from "../db";
-import {
-    friendGroupMembers,
-    friendGroups,
-    friendRequests,
-    users,
-} from "../db/schema";
+import { friendRequests, friends, users } from "../db/schema";
 
 export default {
     async post(req: Request, res: Response) {
@@ -20,13 +15,10 @@ export default {
                 .nonempty({ abort: true })
                 .max(32, { abort: true })
                 .superRefine(async (data, ctx) => {
-                    const friendGroupIdOfUser = sql`(SELECT ${friendGroups.id} FROM ${friendGroups} WHERE ${friendGroups.userId} = ${user.id})`;
-                    const friendsOfUser = sql`(SELECT ${friendGroupMembers.userId} FROM ${friendGroupMembers} WHERE ${friendGroupMembers.friendGroupId} = ${friendGroupIdOfUser})`;
-
                     const [friend] = await db
                         .select({
                             id: users.id,
-                            isFriend: sql<boolean>`(SELECT ${users.id} IN ${friendsOfUser})`,
+                            isFriend: sql<boolean>`(SELECT ${users.id} IN (SELECT ${friends.userId} FROM ${friends} WHERE ${friends.friendOf} = ${user.id}))`,
                         })
                         .from(users)
                         .where(eq(users.username, data));

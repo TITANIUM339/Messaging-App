@@ -30,25 +30,20 @@ export const friendRequests = pgTable(
     ],
 );
 
-export const friendGroups = pgTable("friendGroups", {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    userId: integer()
-        .notNull()
-        .unique()
-        .references(() => users.id),
-});
-
-export const friendGroupMembers = pgTable(
-    "friendGroupMembers",
+export const friends = pgTable(
+    "friends",
     {
         userId: integer()
             .notNull()
             .references(() => users.id),
-        friendGroupId: integer()
+        friendOf: integer()
             .notNull()
-            .references(() => friendGroups.id),
+            .references(() => users.id),
     },
-    (table) => [primaryKey({ columns: [table.userId, table.friendGroupId] })],
+    (table) => [
+        primaryKey({ columns: [table.userId, table.friendOf] }),
+        check("self_friend_check", not(eq(table.userId, table.friendOf))),
+    ],
 );
 
 export const refreshTokens = pgTable("refreshTokens", {
