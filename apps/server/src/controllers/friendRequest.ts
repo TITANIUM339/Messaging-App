@@ -34,4 +34,19 @@ export default {
 
         res.sendStatus(201);
     },
+    async delete(req: Request, res: Response) {
+        const senderId = +req.params.senderId!;
+        const receiverId = +req.params.receiverId!;
+
+        await db
+            .delete(friendRequests)
+            .where(
+                and(
+                    eq(friendRequests.senderId, senderId),
+                    eq(friendRequests.receiverId, receiverId),
+                ),
+            );
+
+        res.sendStatus(204);
+    },
 };
