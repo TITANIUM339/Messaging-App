@@ -9,6 +9,9 @@ const route = "/:senderId-:receiverId";
 
 router.use(route, checkFriendRequest);
 
-router.route(route).post(onlyAllowFriendRequestReceiver, friendRequest.post);
+router
+    .route(route)
+    .post(onlyAllowFriendRequestReceiver, friendRequest.post)
+    .delete(friendRequest.delete);
 
 export default router;
