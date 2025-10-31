@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import type { Request, Response } from "express";
 import db from "../db";
 import { friendRequests, friends } from "../db/schema";
@@ -14,8 +14,14 @@ export default {
                     .delete(friendRequests)
                     .where(
                         and(
-                            eq(friendRequests.senderId, senderId),
-                            eq(friendRequests.receiverId, receiverId),
+                            or(
+                                eq(friendRequests.senderId, senderId),
+                                eq(friendRequests.senderId, receiverId),
+                            ),
+                            or(
+                                eq(friendRequests.receiverId, receiverId),
+                                eq(friendRequests.receiverId, senderId),
+                            ),
                         ),
                     ),
 
