@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import Auth from "./layouts/Auth";
-import Add from "./pages/add";
+import Add, { addAction } from "./pages/add";
 import Friends from "./pages/friends";
 import Login, { loginAction } from "./pages/login";
 import Root, { rootLoader } from "./pages/root";
@@ -21,6 +21,7 @@ export default function App() {
                         {
                             path: "add",
                             Component: Add,
+                            action: addAction,
                         },
                     ],
                 },
