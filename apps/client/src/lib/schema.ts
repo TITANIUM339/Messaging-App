@@ -8,3 +8,5 @@ export const Login = z.object({
 export const AccessToken = z.object({
     accessToken: z.jwt(),
 });
+
+export const Username = z.object({ username: z.string().nonempty().max(32) });
