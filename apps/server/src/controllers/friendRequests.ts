@@ -1,4 +1,5 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import type { Request, Response } from "express";
 import * as z from "zod";
 import db from "../db";
@@ -50,5 +51,33 @@ export default {
             .onConflictDoNothing();
 
         res.sendStatus(201);
+    },
+    async get(req: Request, res: Response) {
+        const user = req.user as typeof users.$inferSelect;
+
+        const senders = alias(users, "senders");
+        const receivers = alias(users, "receivers");
+
+        res.json(
+            await db
+                .select({
+                    senderId: friendRequests.senderId,
+                    senderUsername: senders.username,
+                    receiverId: friendRequests.receiverId,
+                    receiverUsername: receivers.username,
+                })
+                .from(friendRequests)
+                .innerJoin(senders, eq(senders.id, friendRequests.senderId))
+                .innerJoin(
+                    receivers,
+                    eq(receivers.id, friendRequests.receiverId),
+                )
+                .where(
+                    or(
+                        eq(friendRequests.receiverId, user.id),
+                        eq(friendRequests.senderId, user.id),
+                    ),
+                ),
+        );
     },
 };
