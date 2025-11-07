@@ -10,6 +10,6 @@ const route = "/friend-requests";
 router.use(route, passport.authenticate("accessToken", { session: false }));
 router.use(route, friendRequestRouter);
 
-router.post(route, friendRequests.post);
+router.route(route).post(friendRequests.post).get(friendRequests.get);
 
 export default router;
