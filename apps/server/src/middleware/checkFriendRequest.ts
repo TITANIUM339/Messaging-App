@@ -7,12 +7,8 @@ import { friendRequests } from "../db/schema";
 
 const FriendRequest = z
     .object({
-        senderId: z
-            .transform((data) => Number(data))
-            .pipe(z.int().min(1, { abort: true })),
-        receiverId: z
-            .transform((data) => Number(data))
-            .pipe(z.int().min(1, { abort: true })),
+        senderId: z.coerce.number().pipe(z.int().min(1, { abort: true })),
+        receiverId: z.coerce.number().pipe(z.int().min(1, { abort: true })),
     })
     .refine(async (data) => {
         const [friendRequest] = await db
