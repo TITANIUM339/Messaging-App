@@ -1,4 +1,5 @@
-import { AccessToken } from "./schema";
+import { jwtDecode } from "jwt-decode";
+import { AccessToken, User } from "./schema";
 
 class Api {
     #apiURL;
@@ -11,6 +12,12 @@ class Api {
 
     get isLoggedIn() {
         return Boolean(this.#accessToken);
+    }
+
+    get user() {
+        return this.#accessToken
+            ? User.parse(jwtDecode(this.#accessToken))
+            : null;
     }
 
     async fetch(
