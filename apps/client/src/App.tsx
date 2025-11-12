@@ -4,6 +4,7 @@ import Auth from "./layouts/Auth";
 import Add, { addAction } from "./pages/add";
 import Friends from "./pages/friends";
 import Login, { loginAction } from "./pages/login";
+import Pending, { pendingAction, pendingLoader } from "./pages/pending";
 import Root, { rootLoader } from "./pages/root";
 import Signup, { signupAction } from "./pages/signup";
 
@@ -22,6 +23,12 @@ export default function App() {
                             path: "add",
                             Component: Add,
                             action: addAction,
+                        },
+                        {
+                            path: "pending",
+                            loader: pendingLoader,
+                            Component: Pending,
+                            action: pendingAction,
                         },
                     ],
                 },
