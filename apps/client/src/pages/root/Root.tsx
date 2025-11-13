@@ -1,7 +1,7 @@
+import Button from "@components/Button";
 import { BsFillPeopleFill, BsPlusLg } from "react-icons/bs";
 import { Outlet } from "react-router";
 import { twMerge } from "tailwind-merge";
-import Button from "../../components/Button";
 
 export default function Root() {
     return (

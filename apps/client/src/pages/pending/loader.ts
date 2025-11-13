@@ -1,5 +1,5 @@
-import api from "../../lib/api";
-import { FriendRequests } from "../../lib/schema";
+import api from "@lib/api";
+import { FriendRequests } from "@lib/schema";
 
 export default async function loader() {
     const response = await api.fetch("/friend-requests");

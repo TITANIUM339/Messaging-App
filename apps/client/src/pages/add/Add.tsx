@@ -1,9 +1,9 @@
+import Button from "@components/Button";
+import Spinner from "@components/Spinner";
+import { Username } from "@lib/schema";
 import { BsCheckCircleFill, BsExclamationCircleFill } from "react-icons/bs";
 import { useFetcher } from "react-router";
 import * as z from "zod";
-import Button from "../../components/Button";
-import Spinner from "../../components/Spinner";
-import { Username } from "../../lib/schema";
 
 type TreeifiedError = ReturnType<
     typeof z.treeifyError<z.infer<typeof Username>>

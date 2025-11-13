@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/only-throw-error */
+import api from "@lib/api";
+import { FriendRequestId } from "@lib/schema";
 import type { ActionFunctionArgs } from "react-router";
-import api from "../../lib/api";
-import { FriendRequestId } from "../../lib/schema";
 
 export default async function action({ request }: ActionFunctionArgs) {
     const formData = await request.formData();

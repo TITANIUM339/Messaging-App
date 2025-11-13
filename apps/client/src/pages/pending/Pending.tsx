@@ -1,10 +1,10 @@
+import Button from "@components/Button";
+import api from "@lib/api";
+import { type FriendRequests, FriendRequestId } from "@lib/schema";
 import { useEffect, useState } from "react";
 import { BsCheckLg, BsXLg } from "react-icons/bs";
 import { useFetcher, useLoaderData } from "react-router";
 import * as z from "zod";
-import Button from "../../components/Button";
-import api from "../../lib/api";
-import { type FriendRequests, FriendRequestId } from "../../lib/schema";
 
 export default function Pending() {
     const fetcher = useFetcher();

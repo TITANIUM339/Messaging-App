@@ -1,6 +1,6 @@
+import Button from "@components/Button";
 import { BsDot, BsFillPeopleFill } from "react-icons/bs";
 import { Outlet } from "react-router";
-import Button from "../../components/Button";
 
 export default function Friends() {
     return (

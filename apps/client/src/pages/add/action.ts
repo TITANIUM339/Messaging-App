@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/only-throw-error */
+import api from "@lib/api";
+import { Username } from "@lib/schema";
 import type { ActionFunctionArgs } from "react-router";
 import { treeifyError } from "zod";
-import api from "../../lib/api";
-import { Username } from "../../lib/schema";
 
 export default async function action({ request }: ActionFunctionArgs) {
     const formData = await request.formData();

@@ -1,8 +1,8 @@
+import Button from "@components/Button";
+import Spinner from "@components/Spinner";
 import { useId } from "react";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { Form, Link, useActionData, useNavigation } from "react-router";
-import Button from "../../components/Button";
-import Spinner from "../../components/Spinner";
 
 export default function Login() {
     const id1 = useId(),
