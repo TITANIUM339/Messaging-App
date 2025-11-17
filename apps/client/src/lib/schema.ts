@@ -28,3 +28,10 @@ export const FriendRequestId = z.object({
     senderId: z.coerce.number().pipe(z.int()),
     receiverId: z.coerce.number().pipe(z.int()),
 });
+
+export const Friends = z.array(
+    z.object({
+        id: z.int(),
+        username: z.string(),
+    }),
+);
