@@ -1,6 +1,5 @@
 import { and, eq } from "drizzle-orm";
 import type { NextFunction, Request, Response } from "express";
-import createHttpError from "http-errors";
 import * as z from "zod";
 import db from "../db";
 import { friendRequests } from "../db/schema";
@@ -40,7 +39,7 @@ export default async function checkFriendRequest(
     const result = await FriendRequest.safeParseAsync(req.params);
 
     if (!result.success) {
-        next(createHttpError(404));
+        next("router");
 
         return;
     }
