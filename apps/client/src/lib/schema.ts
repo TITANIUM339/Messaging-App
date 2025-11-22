@@ -35,3 +35,7 @@ export const Friends = z.array(
         username: z.string(),
     }),
 );
+
+export const UserId = z.object({
+    userId: z.coerce.number().pipe(z.int().min(1)),
+});
