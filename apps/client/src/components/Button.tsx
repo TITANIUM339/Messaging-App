@@ -5,19 +5,19 @@ import { twMerge } from "tailwind-merge";
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     link?: false;
     navLink?: false;
-    variant?: "primary" | "secondary";
+    variant?: "primary" | "secondary" | "danger";
 }
 
 interface LinkButtonProps extends LinkProps {
     link: true;
     navLink?: false;
-    variant?: "primary" | "secondary";
+    variant?: "primary" | "secondary" | "danger";
 }
 
 interface NavLinkButtonProps extends NavLinkProps {
     link?: false;
     navLink: true;
-    variant?: "primary" | "secondary";
+    variant?: "primary" | "secondary" | "danger";
 }
 
 export default function Button(
@@ -31,6 +31,7 @@ export default function Button(
             "border border-indigo-400 bg-indigo-500 text-white hover:not-disabled:border-indigo-500 hover:not-disabled:bg-indigo-600",
         secondary:
             "hover:not-disabled:bg-zinc-700 hover:not-disabled:text-zinc-100 text-zinc-300",
+        danger: "bg-red-700 hover:not-disabled:bg-red-800",
     }[props.variant ?? "primary"];
 
     if (props.link) {
