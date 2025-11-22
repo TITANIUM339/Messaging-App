@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import Auth from "./layouts/Auth";
 import Add, { addAction } from "./pages/add";
-import All, { allLoader } from "./pages/all";
+import All, { allAction, allLoader } from "./pages/all";
 import Friends from "./pages/friends";
 import Login, { loginAction } from "./pages/login";
 import Pending, { pendingAction, pendingLoader } from "./pages/pending";
@@ -35,6 +35,7 @@ export default function App() {
                             index: true,
                             loader: allLoader,
                             Component: All,
+                            action: allAction,
                         },
                     ],
                 },
