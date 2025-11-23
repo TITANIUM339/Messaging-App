@@ -1,15 +1,23 @@
 import Button from "@components/Button";
-import type { Friends } from "@lib/schema";
-import { useRef } from "react";
+import { UserId, type Friends } from "@lib/schema";
+import { useEffect, useRef, useState } from "react";
 import { BsChatFill, BsXLg } from "react-icons/bs";
-import { useFetcher, useLoaderData } from "react-router";
+import {
+    useFetcher,
+    useLoaderData,
+    type FetcherWithComponents,
+} from "react-router";
 import * as z from "zod";
 
 // This part is extracted into its own component due to the difficulties of using refs in an array
-function Friend({ friend }: { friend: z.infer<typeof Friends>[number] }) {
+function Friend({
+    friend,
+    fetcher,
+}: {
+    friend: z.infer<typeof Friends>[number];
+    fetcher: FetcherWithComponents<unknown>;
+}) {
     const dialogRef = useRef<HTMLDialogElement | null>(null);
-
-    const fetcher = useFetcher();
 
     return (
         <li className="flex w-full items-center gap-2 border-t border-zinc-700 p-2">
@@ -87,14 +95,41 @@ function Friend({ friend }: { friend: z.infer<typeof Friends>[number] }) {
 }
 
 export default function All() {
+    const fetcher = useFetcher();
+
     const data = useLoaderData<z.infer<typeof Friends>>();
+
+    const [friends, setFriends] = useState(data);
+
+    // Optimistic UI
+    useEffect(() => {
+        const result = UserId.safeParse({
+            userId: fetcher.formData?.get("userId"),
+        });
+
+        if (!result.success) {
+            return;
+        }
+
+        switch (fetcher.formMethod) {
+            case "DELETE":
+                setFriends((prev) =>
+                    prev.filter((friend) => friend.id !== result.data.userId),
+                );
+
+                break;
+
+            default:
+                break;
+        }
+    }, [fetcher]);
 
     return (
         <div className="pt-2 pr-4 pb-2 pl-4">
-            <h1 className="p-2 text-zinc-300">All — {data.length}</h1>
+            <h1 className="p-2 text-zinc-300">All — {friends.length}</h1>
             <ul>
-                {data.map((friend) => (
-                    <Friend key={friend.id} friend={friend} />
+                {friends.map((friend) => (
+                    <Friend key={friend.id} friend={friend} fetcher={fetcher} />
                 ))}
             </ul>
         </div>
