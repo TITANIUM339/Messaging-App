@@ -9,54 +9,54 @@ import Pending, { pendingAction, pendingLoader } from "./pages/pending";
 import Root, { rootLoader } from "./pages/root";
 import Signup, { signupAction } from "./pages/signup";
 
-export default function App() {
-    const router = createBrowserRouter([
-        {
-            path: "/",
-            loader: rootLoader,
-            Component: Root,
-            children: [
-                {
-                    path: "friends",
-                    Component: Friends,
-                    children: [
-                        {
-                            path: "add",
-                            Component: Add,
-                            action: addAction,
-                        },
-                        {
-                            path: "pending",
-                            loader: pendingLoader,
-                            Component: Pending,
-                            action: pendingAction,
-                        },
-                        {
-                            index: true,
-                            loader: allLoader,
-                            Component: All,
-                            action: allAction,
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            Component: Auth,
-            children: [
-                {
-                    path: "/login",
-                    Component: Login,
-                    action: loginAction,
-                },
-                {
-                    path: "/signup",
-                    Component: Signup,
-                    action: signupAction,
-                },
-            ],
-        },
-    ]);
+const router = createBrowserRouter([
+    {
+        path: "/",
+        loader: rootLoader,
+        Component: Root,
+        children: [
+            {
+                path: "friends",
+                Component: Friends,
+                children: [
+                    {
+                        path: "add",
+                        Component: Add,
+                        action: addAction,
+                    },
+                    {
+                        path: "pending",
+                        loader: pendingLoader,
+                        Component: Pending,
+                        action: pendingAction,
+                    },
+                    {
+                        index: true,
+                        loader: allLoader,
+                        Component: All,
+                        action: allAction,
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        Component: Auth,
+        children: [
+            {
+                path: "/login",
+                Component: Login,
+                action: loginAction,
+            },
+            {
+                path: "/signup",
+                Component: Signup,
+                action: signupAction,
+            },
+        ],
+    },
+]);
 
+export default function App() {
     return <RouterProvider router={router} />;
 }
