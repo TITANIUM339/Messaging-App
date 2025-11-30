@@ -17,7 +17,7 @@ export default {
             }),
         ]);
 
-        await db
+        const result = await db
             .insert(refreshTokens)
             .values({
                 token: refreshToken,
@@ -26,11 +26,17 @@ export default {
             })
             .onConflictDoNothing();
 
-        res.cookie(
-            REFRESH_TOKEN_COOKIE.name,
-            refreshToken,
-            REFRESH_TOKEN_COOKIE.options,
-        );
+        if (result.rowCount) {
+            res.cookie(
+                REFRESH_TOKEN_COOKIE.name,
+                refreshToken,
+                REFRESH_TOKEN_COOKIE.options,
+            );
+        } else {
+            res.sendStatus(409);
+
+            return;
+        }
 
         res.json({ accessToken });
     },
