@@ -11,32 +11,24 @@ export default {
         const [refreshToken, accessToken] = await Promise.all([
             jwt.sing({ id: user.id }, process.env.REFRESH_TOKEN_SECRET!, {
                 expiresIn: "7d",
+                jwtid: crypto.randomUUID(),
             }),
             jwt.sing({ id: user.id }, process.env.ACCESS_TOKEN_SECRET!, {
                 expiresIn: "10m",
             }),
         ]);
 
-        const result = await db
-            .insert(refreshTokens)
-            .values({
-                token: refreshToken,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                userId: user.id,
-            })
-            .onConflictDoNothing();
+        await db.insert(refreshTokens).values({
+            token: refreshToken,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            userId: user.id,
+        });
 
-        if (result.rowCount) {
-            res.cookie(
-                REFRESH_TOKEN_COOKIE.name,
-                refreshToken,
-                REFRESH_TOKEN_COOKIE.options,
-            );
-        } else {
-            res.sendStatus(409);
-
-            return;
-        }
+        res.cookie(
+            REFRESH_TOKEN_COOKIE.name,
+            refreshToken,
+            REFRESH_TOKEN_COOKIE.options,
+        );
 
         res.json({ accessToken });
     },
