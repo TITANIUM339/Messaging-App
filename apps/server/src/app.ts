@@ -1,4 +1,5 @@
 import "dotenv/config";
+import authenticateSocket from "@middleware/authenticateSocket";
 import {
     accessTokenStrategy,
     localStrategy,
@@ -13,8 +14,10 @@ import express, {
     type Response,
 } from "express";
 import helmet from "helmet";
+import { createServer } from "http";
 import createHttpError from "http-errors";
 import passport from "passport";
+import { Server } from "socket.io";
 import db from "./db";
 import { refreshTokens } from "./db/schema";
 import routes from "./routes";
@@ -56,6 +59,14 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     res.sendStatus(code);
 });
 
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+    cors: { origin: process.env.CORS_ORIGIN },
+});
+
+io.use(authenticateSocket);
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+httpServer.listen(PORT, () => console.log(`Listening on port ${PORT}`));
