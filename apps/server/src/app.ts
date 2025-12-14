@@ -7,7 +7,7 @@ import {
 } from "@middleware/passport";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { lte } from "drizzle-orm";
+import { and, eq, inArray, lte } from "drizzle-orm";
 import express, {
     type NextFunction,
     type Request,
@@ -19,7 +19,7 @@ import createHttpError from "http-errors";
 import passport from "passport";
 import { Server } from "socket.io";
 import db from "./db";
-import { refreshTokens } from "./db/schema";
+import { friends, refreshTokens, users } from "./db/schema";
 import routes from "./routes";
 
 setInterval(
@@ -66,6 +66,72 @@ const io = new Server(httpServer, {
 });
 
 io.use(authenticateSocket);
+
+io.on("connection", async (socket) => {
+    socket.join(`${socket.data.user.id}`);
+
+    const connectedFriends = await db
+        .select({ id: users.id, username: users.username })
+        .from(friends)
+        .innerJoin(users, eq(friends.userId, users.id))
+        .where(
+            and(
+                eq(friends.friendOf, socket.data.user.id),
+                inArray(
+                    friends.userId,
+                    (await io.fetchSockets()).map(
+                        (socket) => socket.data.user.id,
+                    ),
+                ),
+            ),
+        );
+
+    const idsOfConnectedFriends = connectedFriends.map(
+        (friend) => `${friend.id}`,
+    );
+
+    socket.emit("connected_friends", connectedFriends);
+
+    // Only notify the user's friends if they are connected and it's the user's first socket
+    if (
+        idsOfConnectedFriends.length &&
+        (await io.to(`${socket.data.user.id}`).fetchSockets()).length === 1
+    ) {
+        socket
+            .to(idsOfConnectedFriends)
+            .emit("friend_connected", socket.data.user);
+    }
+
+    socket.on("disconnect", async () => {
+        const connectedFriendIds = (
+            await db
+                .select({ id: users.id })
+                .from(friends)
+                .innerJoin(users, eq(friends.userId, users.id))
+                .where(
+                    and(
+                        eq(friends.friendOf, socket.data.user.id),
+                        inArray(
+                            friends.userId,
+                            (await io.fetchSockets()).map(
+                                (socket) => socket.data.user.id,
+                            ),
+                        ),
+                    ),
+                )
+        ).map((friend) => `${friend.id}`);
+
+        // Only notify the user's friends if they are connected and the user has no more sockets
+        if (
+            connectedFriendIds.length &&
+            !(await io.to(`${socket.data.user.id}`).fetchSockets()).length
+        ) {
+            socket
+                .to(connectedFriendIds)
+                .emit("friend_disconnected", socket.data.user);
+        }
+    });
+});
 
 const PORT = process.env.PORT || 3000;
 
