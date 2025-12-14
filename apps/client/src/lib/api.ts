@@ -1,13 +1,24 @@
 import { jwtDecode } from "jwt-decode";
+import { io } from "socket.io-client";
 import { AccessToken, User } from "./schema";
 
 class Api {
     #apiURL;
     #accessToken;
+    #socket;
 
     constructor(apiURL: string, accessToken: null | string) {
         this.#apiURL = apiURL;
         this.#accessToken = accessToken;
+        this.#socket = io(apiURL, { autoConnect: false });
+
+        if (accessToken) {
+            this.#socket.auth = { token: accessToken };
+        }
+    }
+
+    get socket() {
+        return this.#socket;
     }
 
     get isLoggedIn() {
@@ -51,13 +62,35 @@ class Api {
 
                 this.#accessToken = accessToken;
 
+                this.#socket.auth = { token: accessToken };
+
                 return await this.fetch(url, init, false);
             }
 
             this.#accessToken = null;
+
+            this.#socket.auth = {};
         }
 
         return response;
+    }
+
+    async refreshToken() {
+        const response = await this.fetch("/refresh-token", undefined, false);
+
+        if (!response.ok) {
+            this.#accessToken = null;
+
+            this.#socket.auth = {};
+
+            throw new Error("Failed to refresh token");
+        }
+
+        const { accessToken } = AccessToken.parse(await response.json());
+
+        this.#accessToken = accessToken;
+
+        this.#socket.auth = { token: accessToken };
     }
 
     async login(username: string, password: string) {
@@ -77,16 +110,22 @@ class Api {
         const { accessToken } = AccessToken.parse(await response.json());
 
         this.#accessToken = accessToken;
+
+        this.#socket.auth = { token: accessToken };
     }
 
     async logout() {
         const response = await this.fetch("/logout", { method: "post" });
 
+        this.#accessToken = null;
+
+        this.#socket.auth = {};
+
+        this.#socket.disconnect();
+
         if (!response.ok) {
             return response;
         }
-
-        this.#accessToken = null;
     }
 }
 
