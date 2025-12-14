@@ -1,14 +1,21 @@
 import Button from "@components/Button";
+import { ConnectedFriendsContext } from "@components/ConnectedFriendsContext";
 import api from "@lib/api";
-import { useEffect, useRef } from "react";
+import type { Friends } from "@lib/schema";
+import { useEffect, useRef, useState } from "react";
 import { BsFillPeopleFill, BsPlusLg } from "react-icons/bs";
 import { Outlet, useNavigate } from "react-router";
 import { twMerge } from "tailwind-merge";
+import type * as z from "zod";
 
 export default function Root() {
     const navigate = useNavigate();
 
     const timeoutRef = useRef<number | null>(null);
+
+    const [connectedFriends, setConnectedFriends] = useState<
+        z.infer<typeof Friends>
+    >([]);
 
     useEffect(() => {
         async function onConnectError(error: Error) {
@@ -44,13 +51,34 @@ export default function Root() {
                     break;
             }
         }
+        function onConnectedFriends(connectedFriends: z.infer<typeof Friends>) {
+            setConnectedFriends(connectedFriends);
+        }
+        function onFriendConnected(
+            connectedFriend: z.infer<typeof Friends>[number],
+        ) {
+            setConnectedFriends((prev) => [...prev, connectedFriend]);
+        }
+        function onFriendDisconnected(
+            disconnectedFriend: z.infer<typeof Friends>[number],
+        ) {
+            setConnectedFriends((prev) =>
+                prev.filter((friend) => friend.id !== disconnectedFriend.id),
+            );
+        }
 
         api.socket.on("connect_error", onConnectError);
+        api.socket.on("connected_friends", onConnectedFriends);
+        api.socket.on("friend_connected", onFriendConnected);
+        api.socket.on("friend_disconnected", onFriendDisconnected);
 
         api.socket.connect();
 
         return () => {
             api.socket.off("connect_error", onConnectError);
+            api.socket.off("connected_friends", onConnectedFriends);
+            api.socket.off("friend_connected", onFriendConnected);
+            api.socket.off("friend_disconnected", onFriendDisconnected);
 
             api.socket.disconnect();
         };
@@ -128,7 +156,9 @@ export default function Root() {
                 </div>
             </nav>
             <main className="bg-zinc-800">
-                <Outlet />
+                <ConnectedFriendsContext value={connectedFriends}>
+                    <Outlet />
+                </ConnectedFriendsContext>
             </main>
         </div>
     );
