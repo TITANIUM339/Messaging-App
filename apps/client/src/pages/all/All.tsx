@@ -1,35 +1,50 @@
 import Button from "@components/Button";
+import { ConnectedFriendsContext } from "@components/ConnectedFriendsContext";
 import { UserId, type Friends } from "@lib/schema";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { BsChatFill, BsXLg } from "react-icons/bs";
 import {
     useFetcher,
     useLoaderData,
     type FetcherWithComponents,
 } from "react-router";
+import { twMerge } from "tailwind-merge";
 import * as z from "zod";
 
 // This part is extracted into its own component due to the difficulties of using refs in an array
 function Friend({
     friend,
+    isOnline,
     fetcher,
 }: {
     friend: z.infer<typeof Friends>[number];
+    isOnline?: boolean;
     fetcher: FetcherWithComponents<unknown>;
 }) {
     const dialogRef = useRef<HTMLDialogElement | null>(null);
 
     return (
         <li className="flex w-full items-center gap-2 border-t border-zinc-700 p-2">
-            <div className="h-8 w-8 overflow-hidden rounded-full">
-                <img
-                    className="object-cover"
-                    src="https://picsum.photos/200/300"
-                    alt=""
-                />
+            <div className="relative">
+                <div className="relative h-8 w-8 overflow-hidden rounded-full">
+                    <img
+                        className="object-cover"
+                        src="https://picsum.photos/200/300"
+                        alt=""
+                    />
+                </div>
+                <div
+                    className={twMerge(
+                        "absolute right-0 bottom-0 size-4 translate-[3px] rounded-full border-3 border-zinc-800 bg-zinc-500",
+                        isOnline && "bg-green-500",
+                    )}
+                ></div>
             </div>
             <section className="flex-1 truncate">
-                <h2 className="font-medium text-zinc-400">{friend.username}</h2>
+                <h2 className="text-lg font-medium">{friend.username}</h2>
+                <p className="text-sm text-zinc-400">
+                    {isOnline ? "Online" : "Offline"}
+                </p>
             </section>
             <div className="flex gap-2">
                 <Button
@@ -101,6 +116,8 @@ export default function All() {
 
     const [friends, setFriends] = useState(data);
 
+    const connectedFriends = use(ConnectedFriendsContext);
+
     // Optimistic UI
     useEffect(() => {
         const result = UserId.safeParse({
@@ -129,7 +146,15 @@ export default function All() {
             <h1 className="p-2 text-zinc-300">All — {friends.length}</h1>
             <ul>
                 {friends.map((friend) => (
-                    <Friend key={friend.id} friend={friend} fetcher={fetcher} />
+                    <Friend
+                        key={friend.id}
+                        friend={friend}
+                        isOnline={connectedFriends.some(
+                            (connectedFriend) =>
+                                connectedFriend.id === friend.id,
+                        )}
+                        fetcher={fetcher}
+                    />
                 ))}
             </ul>
         </div>
