@@ -1,9 +1,61 @@
 import Button from "@components/Button";
+import api from "@lib/api";
+import { useEffect, useRef } from "react";
 import { BsFillPeopleFill, BsPlusLg } from "react-icons/bs";
-import { Outlet } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { twMerge } from "tailwind-merge";
 
 export default function Root() {
+    const navigate = useNavigate();
+
+    const timeoutRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        async function onConnectError(error: Error) {
+            if (typeof timeoutRef.current === "number") {
+                clearTimeout(timeoutRef.current);
+            }
+
+            switch (error.message) {
+                case "Unauthorized":
+                    try {
+                        await api.refreshToken();
+
+                        timeoutRef.current = setTimeout(
+                            () => api.socket.connect(),
+                            3000,
+                        );
+                    } catch (error) {
+                        console.error(error);
+
+                        await navigate("/login");
+                    }
+
+                    break;
+
+                default:
+                    console.error(error);
+
+                    timeoutRef.current = setTimeout(
+                        () => api.socket.connect(),
+                        3000,
+                    );
+
+                    break;
+            }
+        }
+
+        api.socket.on("connect_error", onConnectError);
+
+        api.socket.connect();
+
+        return () => {
+            api.socket.off("connect_error", onConnectError);
+
+            api.socket.disconnect();
+        };
+    }, [navigate]);
+
     return (
         <div className="grid min-h-dvh grid-cols-[200px_1fr] text-zinc-100">
             <nav className="bg-zinc-900 p-2">
