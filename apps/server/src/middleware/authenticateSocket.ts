@@ -28,6 +28,12 @@ export default async function authenticateSocket(
             .from(users)
             .where(eq(users.id, decoded.id));
 
+        if (!user) {
+            next(new Error("User does not exist"));
+
+            return;
+        }
+
         socket.data.user = user;
     } catch (error) {
         if (
