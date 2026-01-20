@@ -61,7 +61,7 @@ export default async function action({ request }: ActionFunctionArgs) {
             });
 
             const response = await api.fetch("/pgp", {
-                method: "PATCH",
+                method: request.method,
                 body: JSON.stringify({ publicKey: pgp.publicKey }),
             });
 

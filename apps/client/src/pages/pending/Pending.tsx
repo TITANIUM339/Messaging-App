@@ -92,7 +92,7 @@ export default function Pending() {
                         </section>
                         <div className="flex gap-2">
                             {api.user?.id === friendRequest.receiverId ? (
-                                <fetcher.Form method="post">
+                                <fetcher.Form method="POST">
                                     <input
                                         type="hidden"
                                         name="senderId"
@@ -115,7 +115,7 @@ export default function Pending() {
                                     </Button>
                                 </fetcher.Form>
                             ) : null}
-                            <fetcher.Form method="delete">
+                            <fetcher.Form method="DELETE">
                                 <input
                                     type="hidden"
                                     name="senderId"

@@ -97,7 +97,7 @@ class Api {
         const response = await this.fetch(
             "/login",
             {
-                method: "post",
+                method: "POST",
                 body: JSON.stringify({ username, password }),
             },
             false,
@@ -115,7 +115,7 @@ class Api {
     }
 
     async logout() {
-        const response = await this.fetch("/logout", { method: "post" });
+        const response = await this.fetch("/logout", { method: "POST" });
 
         this.#accessToken = null;
 

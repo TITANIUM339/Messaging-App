@@ -24,7 +24,7 @@ export default function Add() {
                 <p className="mt-1 text-zinc-300">
                     You can add friends with their username.
                 </p>
-                <fetcher.Form className="mt-4" method="post">
+                <fetcher.Form className="mt-4" method="POST">
                     <div className="flex gap-2 rounded-lg border border-zinc-950 bg-zinc-900 p-2 transition-colors has-user-invalid:border-red-300 has-focus:border-sky-600">
                         <input
                             className="flex-1 text-zinc-200 outline-0"

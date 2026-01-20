@@ -52,7 +52,7 @@ export default function Signup() {
             <h1 className="text-center text-2xl font-medium">
                 Create an account
             </h1>
-            <fetcher.Form className="mt-4 flex flex-col gap-6" method="post">
+            <fetcher.Form className="mt-4 flex flex-col gap-6" method="POST">
                 <div className="flex flex-col gap-2">
                     <label className="font-medium text-zinc-200" htmlFor={id1}>
                         Username <span className="text-red-300">*</span>

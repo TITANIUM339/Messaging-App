@@ -24,7 +24,7 @@ export default async function action({ request }: ActionFunctionArgs) {
     const response = await api.fetch(
         "/signup",
         {
-            method: "post",
+            method: request.method,
             body: JSON.stringify({ ...result.data, publicKey: pgp.publicKey }),
         },
         false,

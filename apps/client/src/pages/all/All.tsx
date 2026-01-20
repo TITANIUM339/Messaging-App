@@ -87,7 +87,7 @@ function Friend({
                     >
                         Cancel
                     </Button>
-                    <fetcher.Form className="flex-1" method="delete">
+                    <fetcher.Form className="flex-1" method="DELETE">
                         <input
                             type="hidden"
                             name="userId"
