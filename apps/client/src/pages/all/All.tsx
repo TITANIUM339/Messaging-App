@@ -1,5 +1,6 @@
 import Button from "@components/Button";
 import { ConnectedFriendsContext } from "@components/ConnectedFriendsContext";
+import Dialog from "@components/Dialog";
 import { UserId, type Friends } from "@lib/schema";
 import { use, useEffect, useRef, useState } from "react";
 import { BsChatFill, BsXLg } from "react-icons/bs";
@@ -65,10 +66,7 @@ function Friend({
                     <BsXLg />
                 </Button>
             </div>
-            <dialog
-                ref={dialogRef}
-                className="top-[50%] left-[50%] m-2 translate-x-[-50%] translate-y-[-50%] rounded-lg border border-zinc-700 bg-zinc-800 p-4 text-zinc-100 shadow-lg backdrop:bg-black/50"
-            >
+            <Dialog ref={dialogRef}>
                 <section>
                     <h1 className="text-xl font-bold">
                         Remove '{friend.username}'
@@ -104,7 +102,7 @@ function Friend({
                         </Button>
                     </fetcher.Form>
                 </div>
-            </dialog>
+            </Dialog>
         </li>
     );
 }
