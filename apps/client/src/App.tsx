@@ -6,6 +6,7 @@ import All, { allAction, allLoader } from "./pages/all";
 import Friends from "./pages/friends";
 import Login, { loginAction } from "./pages/login";
 import Pending, { pendingAction, pendingLoader } from "./pages/pending";
+import { pgpAction } from "./pages/pgp";
 import Root, { rootLoader } from "./pages/root";
 import Signup, { signupAction } from "./pages/signup";
 
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
                 action: signupAction,
             },
         ],
+    },
+    {
+        path: "/pgp",
+        action: pgpAction,
     },
 ]);
 
