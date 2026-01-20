@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { randomBytes } from "crypto";
 import { eq } from "drizzle-orm";
 import type { Request, Response } from "express";
 import * as z from "zod";
@@ -27,6 +28,7 @@ const User = z.object({
             { error: "Username already exists" },
         ),
     password: z.string().nonempty(),
+    publicKey: z.string().nonempty(),
 });
 
 export default {
@@ -39,9 +41,20 @@ export default {
             return;
         }
 
+        const [passwordHash, passphrase] = await Promise.all([
+            bcrypt.hash(result.data.password, 10),
+            new Promise<string>((resolve, reject) =>
+                randomBytes(64, (err, buf) =>
+                    err ? reject(err) : resolve(buf.toString("base64")),
+                ),
+            ),
+        ]);
+
         await db.insert(users).values({
             username: result.data.username,
-            passwordHash: await bcrypt.hash(result.data.password, 10),
+            passwordHash,
+            publicKey: result.data.publicKey,
+            passphrase,
         });
 
         res.sendStatus(201);
