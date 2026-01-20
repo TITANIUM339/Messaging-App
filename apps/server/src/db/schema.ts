@@ -4,6 +4,7 @@ import {
     integer,
     pgTable,
     primaryKey,
+    text,
     timestamp,
     varchar,
 } from "drizzle-orm/pg-core";
@@ -11,7 +12,9 @@ import {
 export const users = pgTable("users", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     username: varchar({ length: 32 }).notNull().unique(),
-    passwordHash: varchar({ length: 256 }).notNull(),
+    passwordHash: text().notNull(),
+    publicKey: text().notNull(),
+    passphrase: varchar({ length: 128 }).notNull(),
 });
 
 export const friendRequests = pgTable(
@@ -47,7 +50,7 @@ export const friends = pgTable(
 );
 
 export const refreshTokens = pgTable("refreshTokens", {
-    token: varchar({ length: 256 }).notNull().unique(),
+    token: text().notNull().unique(),
     expiresAt: timestamp().notNull(),
     userId: integer()
         .notNull()
