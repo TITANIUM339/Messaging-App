@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/only-throw-error */
 import api from "@lib/api";
 import { Login } from "@lib/schema";
-import { redirect, type ActionFunctionArgs } from "react-router";
+import { encryptKey, generateKey, readPrivateKey } from "openpgp";
+import type { ActionFunctionArgs } from "react-router";
 import * as z from "zod";
 
 export default async function action({ request }: ActionFunctionArgs) {
@@ -13,27 +14,47 @@ export default async function action({ request }: ActionFunctionArgs) {
     });
 
     if (!result.success) {
-        return z.treeifyError(result.error);
+        return { success: false, error: z.treeifyError(result.error) };
     }
+
+    const pgp = await generateKey({
+        userIDs: [{ name: result.data.username }],
+    });
 
     const response = await api.fetch(
         "/signup",
         {
             method: "post",
-            body: JSON.stringify(result.data),
+            body: JSON.stringify({ ...result.data, publicKey: pgp.publicKey }),
         },
         false,
     );
 
     if (response.status === 400) {
-        return (await response.json()) as unknown;
+        return { success: false, error: (await response.json()) as unknown };
     }
 
     if (!response.ok) {
         throw response;
     }
 
-    await api.login(result.data.username, result.data.password);
+    const [errorResponse, privateKey] = await Promise.all([
+        api.login(result.data.username, result.data.password),
+        readPrivateKey({ armoredKey: pgp.privateKey }),
+    ]);
 
-    return redirect("/");
+    if (errorResponse) {
+        throw errorResponse;
+    }
+
+    const encryptedPrivateKey = (
+        await encryptKey({
+            privateKey,
+            passphrase: api.user?.passphrase,
+        })
+    ).armor();
+
+    localStorage.setItem(`key-${api.user?.id}`, encryptedPrivateKey);
+
+    return { success: true, privateKey: encryptedPrivateKey };
 }
