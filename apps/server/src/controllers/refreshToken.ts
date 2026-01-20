@@ -10,11 +10,11 @@ export default {
         const user = req.user as typeof users.$inferSelect;
 
         const [refreshToken, accessToken] = await Promise.all([
-            jwt.sing({ id: user.id }, process.env.REFRESH_TOKEN_SECRET!, {
+            jwt.sing(user, process.env.REFRESH_TOKEN_SECRET!, {
                 expiresIn: "7d",
                 jwtid: crypto.randomUUID(),
             }),
-            jwt.sing({ id: user.id }, process.env.ACCESS_TOKEN_SECRET!, {
+            jwt.sing(user, process.env.ACCESS_TOKEN_SECRET!, {
                 expiresIn: "10m",
             }),
         ]);
