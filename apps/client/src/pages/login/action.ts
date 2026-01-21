@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/only-throw-error */
 import api from "@lib/api";
+import isSameKeyPair from "@lib/isSameKeyPair";
 import { Login } from "@lib/schema";
-import { readKey, readPrivateKey } from "openpgp";
 import { redirect, type ActionFunctionArgs } from "react-router";
 
 export default async function action({ request }: ActionFunctionArgs) {
@@ -29,20 +29,13 @@ export default async function action({ request }: ActionFunctionArgs) {
         throw response;
     }
 
-    try {
-        const key = localStorage.getItem(`key-${api.user?.id}`);
+    const privateKey = localStorage.getItem(`key-${api.user?.id}`);
 
-        if (!key) {
-            return "no_key";
-        }
-
-        const privateKey = await readPrivateKey({ armoredKey: key });
-        const publicKey = await readKey({ armoredKey: api.user!.publicKey });
-
-        if (!privateKey.getKeyID().equals(publicKey.getKeyID())) {
-            return "no_key";
-        }
-    } catch {
+    if (
+        !privateKey ||
+        !api.user?.publicKey ||
+        !(await isSameKeyPair(privateKey, api.user.publicKey))
+    ) {
         return "no_key";
     }
 
