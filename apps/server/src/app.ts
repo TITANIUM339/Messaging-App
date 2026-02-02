@@ -22,6 +22,13 @@ import db from "./db";
 import { friends, refreshTokens, users } from "./db/schema";
 import routes from "./routes";
 
+// https://stackoverflow.com/a/55718334
+declare module "express-serve-static-core" {
+    interface Application {
+        io: Server;
+    }
+}
+
 setInterval(
     async () => {
         try {
@@ -41,6 +48,14 @@ passport.use("accessToken", accessTokenStrategy);
 
 const app = express();
 
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+    cors: { origin: process.env.CORS_ORIGIN },
+});
+
+app.io = io;
+
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
@@ -57,12 +72,6 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     }
 
     res.sendStatus(code);
-});
-
-const httpServer = createServer(app);
-
-const io = new Server(httpServer, {
-    cors: { origin: process.env.CORS_ORIGIN },
 });
 
 io.use(authenticateSocket);
@@ -103,7 +112,7 @@ io.on("connection", async (socket) => {
     }
 
     socket.on("disconnect", async () => {
-        const connectedFriendIds = (
+        const idsOfConnectedFriends = (
             await db
                 .select({ id: users.id })
                 .from(friends)
@@ -123,11 +132,11 @@ io.on("connection", async (socket) => {
 
         // Only notify the user's friends if they are connected and the user has no more sockets
         if (
-            connectedFriendIds.length &&
+            idsOfConnectedFriends.length &&
             !(await io.to(`${socket.data.user.id}`).fetchSockets()).length
         ) {
             socket
-                .to(connectedFriendIds)
+                .to(idsOfConnectedFriends)
                 .emit("friend_disconnected", socket.data.user);
         }
     });
