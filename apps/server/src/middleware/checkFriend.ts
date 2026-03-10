@@ -8,33 +8,32 @@ export default async function checkFriend(
     req: Request,
     res: Response,
     next: NextFunction,
+    userId: unknown,
 ) {
     const user = req.user as typeof users.$inferSelect;
 
-    const Friend = z.object({
-        userId: z.coerce
-            .number()
-            .pipe(z.int({ abort: true }).min(1, { abort: true }))
-            .refine(async (data) => {
-                const [friend] = await db
-                    .select()
-                    .from(friends)
-                    .where(
-                        and(
-                            eq(friends.friendOf, user.id),
-                            eq(friends.userId, data),
-                        ),
-                    );
+    const Friend = z.coerce
+        .number()
+        .pipe(z.int({ abort: true }).min(1, { abort: true }))
+        .refine(async (data) => {
+            const [friend] = await db
+                .select()
+                .from(friends)
+                .where(
+                    and(
+                        eq(friends.friendOf, user.id),
+                        eq(friends.userId, data),
+                    ),
+                );
 
-                if (!friend) {
-                    return false;
-                }
+            if (!friend) {
+                return false;
+            }
 
-                return true;
-            }),
-    });
+            return true;
+        });
 
-    const result = await Friend.safeParseAsync(req.params);
+    const result = await Friend.safeParseAsync(userId);
 
     if (!result.success) {
         next("router");

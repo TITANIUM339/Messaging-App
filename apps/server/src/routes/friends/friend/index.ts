@@ -6,7 +6,7 @@ const router = Router();
 
 const route = "/:userId";
 
-router.use(route, checkFriend);
+router.param("userId", checkFriend);
 
 router.delete(route, friend.delete);
 
