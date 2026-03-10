@@ -1,7 +1,7 @@
 import { and, eq, or } from "drizzle-orm";
 import type { Request, Response } from "express";
 import db from "../db";
-import { friendRequests, friends } from "../db/schema";
+import { chatMembers, chats, friendRequests, friends } from "../db/schema";
 
 export default {
     async post(req: Request, res: Response) {
@@ -40,6 +40,16 @@ export default {
                             friendOf: senderId,
                         },
                     ]),
+                ]);
+
+                const [chat] = await tx
+                    .insert(chats)
+                    .values({ type: "private" })
+                    .returning();
+
+                await tx.insert(chatMembers).values([
+                    { chat: chat!.id, user: senderId },
+                    { chat: chat!.id, user: receiverId },
                 ]);
             }),
         ]);
