@@ -1,3 +1,4 @@
+import chats from "./chats";
 import friendRequests from "./friend-requests";
 import friends from "./friends";
 import login from "./login";
@@ -7,6 +8,7 @@ import refreshToken from "./refresh-token";
 import signup from "./signup";
 
 export default [
+    chats,
     friendRequests,
     friends,
     login,
