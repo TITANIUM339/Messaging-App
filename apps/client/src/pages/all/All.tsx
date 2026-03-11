@@ -30,8 +30,8 @@ function Friend({
                 <div className="relative h-8 w-8 overflow-hidden rounded-full">
                     <img
                         className="object-cover"
-                        src="https://picsum.photos/200/300"
-                        alt=""
+                        src={`https://api.dicebear.com/9.x/identicon/svg?seed=${friend.username}`}
+                        alt="Avatar"
                     />
                 </div>
                 <div

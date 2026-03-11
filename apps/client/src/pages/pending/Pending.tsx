@@ -71,28 +71,55 @@ export default function Pending() {
                 Pending — {friendRequests.length}
             </h1>
             <ul>
-                {friendRequests.map((friendRequest) => (
-                    <li
-                        key={`${friendRequest.senderId}${friendRequest.receiverId}`}
-                        className="flex w-full items-center gap-2 border-t border-zinc-700 p-2"
-                    >
-                        <div className="h-8 w-8 overflow-hidden rounded-full">
-                            <img
-                                className="object-cover"
-                                src="https://picsum.photos/200/300"
-                                alt=""
-                            />
-                        </div>
-                        <section className="flex-1 truncate">
-                            <h2 className="font-medium text-zinc-400">
-                                {api.user?.id === friendRequest.receiverId
-                                    ? friendRequest.senderUsername
-                                    : friendRequest.receiverUsername}
-                            </h2>
-                        </section>
-                        <div className="flex gap-2">
-                            {api.user?.id === friendRequest.receiverId ? (
-                                <fetcher.Form method="POST">
+                {friendRequests.map((friendRequest) => {
+                    const username =
+                        api.user?.id === friendRequest.receiverId
+                            ? friendRequest.senderUsername
+                            : friendRequest.receiverUsername;
+
+                    return (
+                        <li
+                            key={`${friendRequest.senderId}${friendRequest.receiverId}`}
+                            className="flex w-full items-center gap-2 border-t border-zinc-700 p-2"
+                        >
+                            <div className="h-8 w-8 overflow-hidden rounded-full">
+                                <img
+                                    className="object-cover"
+                                    src={`https://api.dicebear.com/9.x/identicon/svg?seed=${username}`}
+                                    alt="Avatar"
+                                />
+                            </div>
+                            <section className="flex-1 truncate">
+                                <h2 className="font-medium text-zinc-400">
+                                    {username}
+                                </h2>
+                            </section>
+                            <div className="flex gap-2">
+                                {api.user?.id === friendRequest.receiverId ? (
+                                    <fetcher.Form method="POST">
+                                        <input
+                                            type="hidden"
+                                            name="senderId"
+                                            value={friendRequest.senderId}
+                                            readOnly
+                                        />
+                                        <input
+                                            type="hidden"
+                                            name="receiverId"
+                                            value={friendRequest.receiverId}
+                                            readOnly
+                                        />
+                                        <Button
+                                            type="submit"
+                                            variant="secondary"
+                                            className="rounded-full not-disabled:hover:text-green-500"
+                                            title="Accept"
+                                        >
+                                            <BsCheckLg />
+                                        </Button>
+                                    </fetcher.Form>
+                                ) : null}
+                                <fetcher.Form method="DELETE">
                                     <input
                                         type="hidden"
                                         name="senderId"
@@ -108,38 +135,16 @@ export default function Pending() {
                                     <Button
                                         type="submit"
                                         variant="secondary"
-                                        className="rounded-full not-disabled:hover:text-green-500"
-                                        title="Accept"
+                                        className="rounded-full not-disabled:hover:text-red-500"
+                                        title="Ignore"
                                     >
-                                        <BsCheckLg />
+                                        <BsXLg />
                                     </Button>
                                 </fetcher.Form>
-                            ) : null}
-                            <fetcher.Form method="DELETE">
-                                <input
-                                    type="hidden"
-                                    name="senderId"
-                                    value={friendRequest.senderId}
-                                    readOnly
-                                />
-                                <input
-                                    type="hidden"
-                                    name="receiverId"
-                                    value={friendRequest.receiverId}
-                                    readOnly
-                                />
-                                <Button
-                                    type="submit"
-                                    variant="secondary"
-                                    className="rounded-full not-disabled:hover:text-red-500"
-                                    title="Ignore"
-                                >
-                                    <BsXLg />
-                                </Button>
-                            </fetcher.Form>
-                        </div>
-                    </li>
-                ))}
+                            </div>
+                        </li>
+                    );
+                })}
             </ul>
         </div>
     );
