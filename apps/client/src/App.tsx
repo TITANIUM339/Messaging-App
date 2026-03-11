@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router/dom";
 import Auth from "./layouts/Auth";
 import Add, { addAction } from "./pages/add";
 import All, { allAction, allLoader } from "./pages/all";
+import Chat, { chatAction, chatLoader } from "./pages/chat";
 import Friends from "./pages/friends";
 import Login, { loginAction } from "./pages/login";
 import Pending, { pendingAction, pendingLoader } from "./pages/pending";
@@ -38,6 +39,13 @@ const router = createBrowserRouter([
                         action: allAction,
                     },
                 ],
+            },
+            {
+                path: "chats/:chatId",
+                loader: chatLoader,
+                Component: Chat,
+                action: chatAction,
+                shouldRevalidate: () => false,
             },
         ],
     },
