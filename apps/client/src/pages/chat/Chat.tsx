@@ -73,7 +73,7 @@ export default function Chat() {
         data.chat?.privateChat?.username ?? data?.chat?.groupChat?.title;
 
     return (
-        <div className="grid h-dvh grid-rows-[57px_1fr]">
+        <div className="grid h-dvh grid-rows-[68px_1fr]">
             <div className="flex items-center border-b border-zinc-700 pt-2 pr-6 pb-2 pl-6">
                 <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
                     <div className="relative">
