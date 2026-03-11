@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/only-throw-error */
 import api from "@lib/api";
 import isSameKeyPair from "@lib/isSameKeyPair";
-import { decryptKey, readPrivateKey } from "openpgp";
 import { redirect } from "react-router";
 
 export default async function loader() {
@@ -25,8 +24,11 @@ export default async function loader() {
         return redirect("/login");
     }
 
-    return await decryptKey({
-        privateKey: await readPrivateKey({ armoredKey: privateKey }),
-        passphrase: api.user?.passphrase,
-    });
+    const response = await api.fetch("/chats");
+
+    if (!response.ok) {
+        throw response;
+    }
+
+    return (await response.json()) as unknown;
 }
