@@ -68,3 +68,5 @@ export const PrivateKeyFile = z.object({
                 ),
         ),
 });
+
+export const Message = z.string().trim().nonempty();
