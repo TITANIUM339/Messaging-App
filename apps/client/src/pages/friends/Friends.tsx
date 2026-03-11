@@ -4,7 +4,7 @@ import { Outlet } from "react-router";
 
 export default function Friends() {
     return (
-        <div className="grid h-full grid-rows-[min-content_1fr]">
+        <div className="grid h-full grid-rows-[68px_1fr]">
             <nav className="flex items-center gap-2 border-b border-zinc-700 pt-2 pr-6 pb-2 pl-6">
                 <section className="flex items-center gap-2">
                     <BsFillPeopleFill className="text-zinc-400" />
