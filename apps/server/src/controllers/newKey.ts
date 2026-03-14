@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import type { Request, Response } from "express";
 import * as z from "zod";
 import db from "../db";
-import { users } from "../db/schema";
+import { messages, users } from "../db/schema";
 
 const NewKey = z.object({ publicKey: z.string().nonempty() });
 
@@ -17,6 +17,25 @@ export default {
 
             return;
         }
+
+        await db.transaction(async (tx) => {
+            await Promise.all([
+                tx
+                    .update(users)
+                    .set({
+                        publicKey: result.data.publicKey,
+                        passphrase: await new Promise((resolve, reject) =>
+                            randomBytes(64, (err, buf) =>
+                                err
+                                    ? reject(err)
+                                    : resolve(buf.toString("base64")),
+                            ),
+                        ),
+                    })
+                    .where(eq(users.id, user.id)),
+                tx.delete(messages).where(eq(messages.to, user.id)),
+            ]);
+        });
 
         await db
             .update(users)
