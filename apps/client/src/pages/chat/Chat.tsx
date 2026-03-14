@@ -2,19 +2,12 @@ import Button from "@components/Button";
 import { ConnectedFriendsContext } from "@components/ConnectedFriendsContext";
 import Spinner from "@components/Spinner";
 import api from "@lib/api";
+import { decrypt, readMessage } from "openpgp";
 import { use, useEffect, useRef, useState } from "react";
 import { BsFillSendFill } from "react-icons/bs";
 import { useFetcher, useLoaderData } from "react-router";
 import { twMerge } from "tailwind-merge";
-
-interface Message {
-    id: number;
-    content: string;
-    senderId: number;
-    senderUsername: string;
-    chat: number;
-    createdAt: string;
-}
+import type { Message } from "../../types/type";
 
 export default function Chat() {
     const data = useLoaderData<{
@@ -56,8 +49,17 @@ export default function Chat() {
     }, [fetcher.state]);
 
     useEffect(() => {
-        function updateMessages(message: Message) {
-            setMessages((prev) => [...prev, message]);
+        async function updateMessages(message: Message) {
+            const content = (
+                await decrypt({
+                    message: await readMessage({
+                        armoredMessage: message.content,
+                    }),
+                    decryptionKeys: api.privateKey!,
+                })
+            ).data as string;
+
+            setMessages((prev) => [...prev, { ...message, content }]);
         }
 
         const chatId = data.chat?.privateChat?.id ?? data?.chat?.groupChat?.id;
