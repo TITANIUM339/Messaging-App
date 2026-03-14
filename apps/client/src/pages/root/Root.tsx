@@ -150,7 +150,7 @@ export default function Root() {
                                                         <img
                                                             className="object-cover"
                                                             src={`https://api.dicebear.com/9.x/identicon/svg?seed=${chat.username}`}
-                                                            alt=""
+                                                            alt="Avatar"
                                                         />
                                                     </div>
                                                     <div
