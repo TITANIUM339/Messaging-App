@@ -80,7 +80,7 @@ export default function Pending() {
                     return (
                         <li
                             key={`${friendRequest.senderId}${friendRequest.receiverId}`}
-                            className="flex w-full items-center gap-2 border-t border-zinc-700 p-2"
+                            className="grid w-full grid-cols-[min-content_minmax(1ch,1fr)_min-content] items-center gap-2 border-t border-zinc-700 p-2"
                         >
                             <div className="h-8 w-8 overflow-hidden rounded-full">
                                 <img
@@ -89,11 +89,9 @@ export default function Pending() {
                                     alt="Avatar"
                                 />
                             </div>
-                            <section className="flex-1 truncate">
-                                <h2 className="font-medium text-zinc-400">
-                                    {username}
-                                </h2>
-                            </section>
+                            <h2 className="truncate font-medium text-zinc-400">
+                                {username}
+                            </h2>
                             <div className="flex gap-2">
                                 {api.user?.id === friendRequest.receiverId ? (
                                     <fetcher.Form method="POST">

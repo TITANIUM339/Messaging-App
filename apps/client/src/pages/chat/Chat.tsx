@@ -75,11 +75,11 @@ export default function Chat() {
         data.chat?.privateChat?.username ?? data?.chat?.groupChat?.title;
 
     return (
-        <div className="grid h-dvh grid-rows-[68px_1fr]">
+        <div className="grid h-dvh grid-rows-[min-content_1fr]">
             <div className="flex items-center border-b border-zinc-700 pt-2 pr-6 pb-2 pl-6">
                 <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
                     <div className="relative">
-                        <div className="relative h-6 w-6 overflow-hidden rounded-full">
+                        <div className="h-6 w-6 overflow-hidden rounded-full">
                             <img
                                 className="object-cover"
                                 src={`https://api.dicebear.com/9.x/identicon/svg?seed=${chatName}`}

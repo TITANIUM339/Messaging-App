@@ -27,7 +27,7 @@ function Friend({
     return (
         <li className="flex w-full items-center gap-2 border-t border-zinc-700 p-2">
             <div className="relative">
-                <div className="relative h-8 w-8 overflow-hidden rounded-full">
+                <div className="h-8 w-8 overflow-hidden rounded-full">
                     <img
                         className="object-cover"
                         src={`https://api.dicebear.com/9.x/identicon/svg?seed=${friend.username}`}
@@ -41,8 +41,10 @@ function Friend({
                     )}
                 ></div>
             </div>
-            <section className="flex-1 truncate">
-                <h2 className="text-lg font-medium">{friend.username}</h2>
+            <section className="grid w-full grid-cols-[minmax(6ch,1fr)]">
+                <h2 className="truncate text-lg font-medium">
+                    {friend.username}
+                </h2>
                 <p className="text-sm text-zinc-400">
                     {isOnline ? "Online" : "Offline"}
                 </p>
