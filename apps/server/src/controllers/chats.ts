@@ -1,4 +1,4 @@
-import { and, eq, not } from "drizzle-orm";
+import { and, eq, inArray, not } from "drizzle-orm";
 import type { Request, Response } from "express";
 import db from "../db";
 import { chatMembers, chats, users } from "../db/schema";
@@ -20,6 +20,17 @@ export default {
                 .where(
                     and(
                         not(eq(chatMembers.user, user.id)),
+                        inArray(
+                            chats.id,
+                            db
+                                .select({ id: chats.id })
+                                .from(chats)
+                                .leftJoin(
+                                    chatMembers,
+                                    eq(chats.id, chatMembers.chat),
+                                )
+                                .where(eq(chatMembers.user, user.id)),
+                        ),
                         eq(chats.type, "private"),
                     ),
                 ),
