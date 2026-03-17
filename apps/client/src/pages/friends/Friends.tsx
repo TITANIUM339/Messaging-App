@@ -4,14 +4,14 @@ import { Outlet } from "react-router";
 
 export default function Friends() {
     return (
-        <div className="grid h-full grid-rows-[68px_1fr]">
-            <nav className="flex items-center gap-2 border-b border-zinc-700 pt-2 pr-6 pb-2 pl-6">
+        <div className="grid grid-cols-1 grid-rows-[min-content_1fr]">
+            <nav className="flex flex-wrap items-center gap-2 border-b border-zinc-700 pt-2 pr-6 pb-2 pl-6">
                 <section className="flex items-center gap-2">
                     <BsFillPeopleFill className="text-zinc-400" />
                     <h1 className="font-medium">Friends</h1>
                     <BsDot className="text-zinc-600" size={20} />
                 </section>
-                <ul className="flex gap-4">
+                <ul className="flex flex-wrap gap-4">
                     <li>
                         <Button
                             navLink

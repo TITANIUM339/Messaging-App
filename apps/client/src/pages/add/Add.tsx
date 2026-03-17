@@ -27,7 +27,7 @@ export default function Add() {
                 <fetcher.Form className="mt-4" method="POST">
                     <div className="flex gap-2 rounded-lg border border-zinc-950 bg-zinc-900 p-2 transition-colors has-user-invalid:border-red-300 has-focus:border-sky-600">
                         <input
-                            className="flex-1 text-zinc-200 outline-0"
+                            className="min-w-24 flex-1 text-zinc-200 outline-0"
                             type="text"
                             name="username"
                             required

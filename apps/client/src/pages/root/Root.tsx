@@ -3,7 +3,12 @@ import { ConnectedFriendsContext } from "@components/ConnectedFriendsContext";
 import api from "@lib/api";
 import type { Friends } from "@lib/schema";
 import { useEffect, useRef, useState } from "react";
-import { BsFillPeopleFill, BsPlusLg } from "react-icons/bs";
+import {
+    BsCaretLeftFill,
+    BsCaretRightFill,
+    BsFillPeopleFill,
+    BsPlusLg,
+} from "react-icons/bs";
 import { Outlet, useLoaderData, useNavigate } from "react-router";
 import { twMerge } from "tailwind-merge";
 import type * as z from "zod";
@@ -26,6 +31,7 @@ export default function Root() {
     const [connectedFriends, setConnectedFriends] = useState<
         z.infer<typeof Friends>
     >([]);
+    const [sidebarActive, setSidebarActive] = useState(false);
 
     useEffect(() => {
         async function onConnectError(error: Error) {
@@ -95,138 +101,170 @@ export default function Root() {
     }, [navigate]);
 
     return (
-        <div className="grid min-h-dvh grid-cols-[200px_1fr] text-zinc-100">
-            <nav className="grid grid-rows-[60px_1fr] bg-zinc-900 p-2">
-                <ul className="border-b border-zinc-700 pb-2">
-                    <li>
-                        <Button
-                            className={({ isActive }) => {
-                                const baseStyles =
-                                    "flex w-full items-center gap-2";
+        <div className="grid h-dvh grid-cols-[min-content_1fr] text-zinc-100">
+            <div className="grid sm:grid-cols-[min-content_1fr]">
+                <div
+                    className={twMerge(
+                        "absolute z-1 grid h-full w-[250px] -translate-x-full grid-cols-[1fr_min-content] transition-transform sm:static sm:translate-0",
+                        sidebarActive && "translate-x-0",
+                    )}
+                >
+                    <nav className="grid h-full grid-rows-[min-content_min-content_1fr] gap-2 bg-zinc-900 p-2">
+                        <ul>
+                            <li>
+                                <Button
+                                    className={({ isActive }) => {
+                                        const baseStyles =
+                                            "flex w-full items-center gap-2";
 
-                                if (isActive) {
-                                    return twMerge(baseStyles, "bg-zinc-600");
-                                }
+                                        if (isActive) {
+                                            return twMerge(
+                                                baseStyles,
+                                                "bg-zinc-600",
+                                            );
+                                        }
 
-                                return baseStyles;
-                            }}
-                            navLink
-                            to="/friends"
-                            variant="secondary"
-                        >
-                            <BsFillPeopleFill /> Friends
-                        </Button>
-                    </li>
-                </ul>
-                <div className="mt-2">
-                    <h1 className="text-lg font-medium text-zinc-300">Chats</h1>
-                    <section className="p-2">
-                        <h2 className="text-zinc-400">Private</h2>
-                        <ul className="mt-1 flex flex-col gap-1">
-                            {data.privateChats.map((chat) => (
-                                <li key={chat.id}>
-                                    <Button
-                                        className={({ isActive }) => {
-                                            const baseStyles =
-                                                "group flex w-full items-center gap-2";
+                                        return baseStyles;
+                                    }}
+                                    navLink
+                                    to="/friends"
+                                    variant="secondary"
+                                    onClick={() => setSidebarActive(false)}
+                                >
+                                    <BsFillPeopleFill /> Friends
+                                </Button>
+                            </li>
+                        </ul>
+                        <hr className="text-zinc-700" />
+                        <div>
+                            <h1 className="text-lg font-medium text-zinc-300">
+                                Chats
+                            </h1>
+                            <section className="p-2">
+                                <h2 className="text-zinc-400">Private</h2>
+                                <ul className="mt-1 flex flex-col gap-1">
+                                    {data.privateChats.map((chat) => (
+                                        <li key={chat.id}>
+                                            <Button
+                                                className={({ isActive }) => {
+                                                    const baseStyles =
+                                                        "group grid grid-cols-[min-content_1fr] items-center gap-2";
 
-                                            if (isActive) {
-                                                return twMerge(
-                                                    baseStyles,
-                                                    "bg-zinc-600",
-                                                );
-                                            }
+                                                    if (isActive) {
+                                                        return twMerge(
+                                                            baseStyles,
+                                                            "bg-zinc-600",
+                                                        );
+                                                    }
 
-                                            return baseStyles;
-                                        }}
-                                        navLink
-                                        to={`/chats/${chat.id}`}
-                                        variant="secondary"
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <div className="relative">
-                                                    <div className="relative h-8 w-8 overflow-hidden rounded-full">
-                                                        <img
-                                                            className="object-cover"
-                                                            src={`https://api.dicebear.com/9.x/identicon/svg?seed=${chat.username}`}
-                                                            alt="Avatar"
-                                                        />
-                                                    </div>
-                                                    <div
-                                                        className={twMerge(
-                                                            "absolute right-0 bottom-0 size-4 translate-[3px] rounded-full border-3 border-zinc-900 bg-zinc-500 group-hover:border-zinc-700",
-                                                            isActive &&
-                                                                "border-zinc-600",
-                                                            connectedFriends.some(
-                                                                (
-                                                                    connectedFriend,
-                                                                ) =>
-                                                                    connectedFriend.id ===
-                                                                    chat.userId,
-                                                            ) && "bg-green-500",
-                                                        )}
-                                                    ></div>
+                                                    return baseStyles;
+                                                }}
+                                                navLink
+                                                to={`/chats/${chat.id}`}
+                                                variant="secondary"
+                                                onClick={() =>
+                                                    setSidebarActive(false)
+                                                }
+                                            >
+                                                {({ isActive }) => (
+                                                    <>
+                                                        <div className="relative">
+                                                            <div className="h-8 w-8 overflow-hidden rounded-full">
+                                                                <img
+                                                                    className="object-cover"
+                                                                    src={`https://api.dicebear.com/9.x/identicon/svg?seed=${chat.username}`}
+                                                                    alt="Avatar"
+                                                                />
+                                                            </div>
+                                                            <div
+                                                                className={twMerge(
+                                                                    "absolute right-0 bottom-0 size-4 translate-[3px] rounded-full border-3 border-zinc-900 bg-zinc-500 group-hover:border-zinc-700",
+                                                                    isActive &&
+                                                                        "border-zinc-600",
+                                                                    connectedFriends.some(
+                                                                        (
+                                                                            connectedFriend,
+                                                                        ) =>
+                                                                            connectedFriend.id ===
+                                                                            chat.userId,
+                                                                    ) &&
+                                                                        "bg-green-500",
+                                                                )}
+                                                            ></div>
+                                                        </div>
+                                                        <h2 className="truncate font-medium text-zinc-400">
+                                                            {chat.username}
+                                                        </h2>
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </section>
+                            <div className="p-2">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-zinc-400">Group</h2>
+                                    <Button variant="secondary">
+                                        <BsPlusLg />
+                                    </Button>
+                                </div>
+                                <ul className="mt-1 flex flex-col gap-1">
+                                    {data.groupChats.map((chat) => (
+                                        <li key={chat.id}>
+                                            <Button
+                                                className={({ isActive }) => {
+                                                    const baseStyles =
+                                                        "group grid grid-cols-[min-content_1fr] items-center gap-2";
+
+                                                    if (isActive) {
+                                                        return twMerge(
+                                                            baseStyles,
+                                                            "bg-zinc-600",
+                                                        );
+                                                    }
+
+                                                    return baseStyles;
+                                                }}
+                                                navLink
+                                                to={`/chats/${chat.id}`}
+                                                variant="secondary"
+                                            >
+                                                <div className="h-8 w-8 overflow-hidden rounded-full">
+                                                    <img
+                                                        className="object-cover"
+                                                        src={`https://api.dicebear.com/9.x/identicon/svg?seed=${chat.title}`}
+                                                        alt="Avatar"
+                                                    />
                                                 </div>
-                                                <section className="flex-1 truncate">
-                                                    <h2 className="font-medium text-zinc-400">
-                                                        {chat.username}
-                                                    </h2>
-                                                </section>
-                                            </>
-                                        )}
-                                    </Button>
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
-                    <section className="p-2">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-zinc-400">Group</h2>
-                            <Button variant="secondary">
-                                <BsPlusLg />
-                            </Button>
+                                                <h2 className="truncate font-medium text-zinc-400">
+                                                    {chat.title}
+                                                </h2>
+                                            </Button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
-                        <ul className="mt-1 flex flex-col gap-1">
-                            {data.groupChats.map((chat) => (
-                                <li key={chat.id}>
-                                    <Button
-                                        className={({ isActive }) => {
-                                            const baseStyles =
-                                                "flex w-full items-center gap-2";
-
-                                            if (isActive) {
-                                                return twMerge(
-                                                    baseStyles,
-                                                    "bg-zinc-600",
-                                                );
-                                            }
-
-                                            return baseStyles;
-                                        }}
-                                        navLink
-                                        to={`/chats/${chat.id}`}
-                                        variant="secondary"
-                                    >
-                                        <div className="h-8 w-8 overflow-hidden rounded-full">
-                                            <img
-                                                className="object-cover"
-                                                src={`https://api.dicebear.com/9.x/identicon/svg?seed=${chat.title}`}
-                                                alt="Avatar"
-                                            />
-                                        </div>
-                                        <section className="flex-1 truncate">
-                                            <h2 className="font-medium text-zinc-400">
-                                                {chat.title}
-                                            </h2>
-                                        </section>
-                                    </Button>
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
+                    </nav>
+                    <div className="flex items-center bg-zinc-950 p-1 sm:hidden">
+                        <Button
+                            variant="secondary"
+                            onClick={() => setSidebarActive(false)}
+                        >
+                            <BsCaretLeftFill />
+                        </Button>
+                    </div>
                 </div>
-            </nav>
+                <div className="flex items-center bg-zinc-950 p-1 sm:hidden">
+                    <Button
+                        variant="secondary"
+                        onClick={() => setSidebarActive(true)}
+                    >
+                        <BsCaretRightFill />
+                    </Button>
+                </div>
+            </div>
             <main className="bg-zinc-800">
                 <ConnectedFriendsContext value={connectedFriends}>
                     <Outlet />
