@@ -45,7 +45,8 @@ const router = createBrowserRouter([
                 loader: chatLoader,
                 Component: Chat,
                 action: chatAction,
-                shouldRevalidate: () => false,
+                shouldRevalidate: ({ formMethod }) =>
+                    formMethod ? false : true,
             },
         ],
     },
