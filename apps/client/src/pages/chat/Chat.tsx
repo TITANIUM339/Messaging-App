@@ -32,6 +32,8 @@ export default function Chat() {
     const messagesContainerRef = useRef<null | HTMLDivElement>(null);
     const formRef = useRef<null | HTMLFormElement>(null);
 
+    useEffect(() => setMessages(data.messages), [data.messages]);
+
     useEffect(
         () =>
             // https://stackoverflow.com/a/11715670
