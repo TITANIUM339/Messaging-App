@@ -34,8 +34,6 @@ export default function Chat() {
     const messagesContainerRef = useRef<null | HTMLDivElement>(null);
     const formRef = useRef<null | HTMLFormElement>(null);
 
-    useEffect(() => setMessages(data.messages), [data.messages]);
-
     useEffect(() => anchorRef.current?.scrollIntoView(), [fetcher.state]);
 
     useEffect(() => {
@@ -45,6 +43,11 @@ export default function Chat() {
             setScrollToBottom(false);
         }
     }, [scrollToBottom]);
+
+    useEffect(() => {
+        setMessages(data.messages);
+        setScrollToBottom(true);
+    }, [data.messages]);
 
     useEffect(() => {
         if (fetcher.state === "submitting") {
