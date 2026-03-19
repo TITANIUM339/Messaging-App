@@ -24,25 +24,27 @@ export default function Chat() {
     }>();
 
     const [messages, setMessages] = useState(data.messages);
+    const [scrollToBottom, setScrollToBottom] = useState(false);
 
     const connectedFriends = use(ConnectedFriendsContext);
 
     const fetcher = useFetcher();
 
+    const anchorRef = useRef<null | HTMLDivElement>(null);
     const messagesContainerRef = useRef<null | HTMLDivElement>(null);
     const formRef = useRef<null | HTMLFormElement>(null);
 
     useEffect(() => setMessages(data.messages), [data.messages]);
 
-    useEffect(
-        () =>
-            // https://stackoverflow.com/a/11715670
-            messagesContainerRef.current?.scrollTo(
-                0,
-                messagesContainerRef.current.scrollHeight,
-            ),
-        [fetcher.state],
-    );
+    useEffect(() => anchorRef.current?.scrollIntoView(), [fetcher.state]);
+
+    useEffect(() => {
+        if (scrollToBottom) {
+            anchorRef.current?.scrollIntoView();
+
+            setScrollToBottom(false);
+        }
+    }, [scrollToBottom]);
 
     useEffect(() => {
         if (fetcher.state === "submitting") {
@@ -62,6 +64,21 @@ export default function Chat() {
             ).data as string;
 
             setMessages((prev) => [...prev, { ...message, content }]);
+
+            const element = messagesContainerRef.current;
+
+            if (!element) {
+                return;
+            }
+
+            // https://stackoverflow.com/a/42860948
+            const isScrolledToBottom =
+                element.scrollHeight -
+                    element.scrollTop -
+                    element.clientHeight <
+                1;
+
+            setScrollToBottom(isScrolledToBottom);
         }
 
         const chatId = data.chat?.privateChat?.id ?? data?.chat?.groupChat?.id;
@@ -151,6 +168,7 @@ export default function Chat() {
                             </div>
                         </li>
                     ))}
+                    <div ref={anchorRef}></div>
                 </ul>
                 <div className="sticky bottom-0 w-full">
                     <fetcher.Form
