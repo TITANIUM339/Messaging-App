@@ -169,7 +169,7 @@ export default function Root() {
                                                 {({ isActive }) => (
                                                     <>
                                                         <div className="relative">
-                                                            <div className="h-8 w-8 overflow-hidden rounded-full">
+                                                            <div className="size-10 overflow-hidden rounded-full">
                                                                 <img
                                                                     className="object-cover"
                                                                     src={`https://api.dicebear.com/9.x/identicon/svg?seed=${chat.username}`}
@@ -230,7 +230,7 @@ export default function Root() {
                                                 to={`/chats/${chat.id}`}
                                                 variant="secondary"
                                             >
-                                                <div className="h-8 w-8 overflow-hidden rounded-full">
+                                                <div className="size-10 overflow-hidden rounded-full">
                                                     <img
                                                         className="object-cover"
                                                         src={`https://api.dicebear.com/9.x/identicon/svg?seed=${chat.title}`}

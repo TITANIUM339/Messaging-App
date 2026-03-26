@@ -82,7 +82,7 @@ export default function Pending() {
                             key={`${friendRequest.senderId}${friendRequest.receiverId}`}
                             className="grid w-full grid-cols-[min-content_minmax(1ch,1fr)_min-content] items-center gap-2 border-t border-zinc-700 p-2"
                         >
-                            <div className="h-8 w-8 overflow-hidden rounded-full">
+                            <div className="size-10 overflow-hidden rounded-full">
                                 <img
                                     className="object-cover"
                                     src={`https://api.dicebear.com/9.x/identicon/svg?seed=${username}`}
