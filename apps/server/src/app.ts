@@ -19,7 +19,7 @@ import createHttpError from "http-errors";
 import passport from "passport";
 import { Server } from "socket.io";
 import db from "./db";
-import { friends, refreshTokens, users } from "./db/schema";
+import { chatMembers, chats, friends, refreshTokens, users } from "./db/schema";
 import routes from "./routes";
 
 // https://stackoverflow.com/a/55718334
@@ -78,6 +78,21 @@ io.use(authenticateSocket);
 
 io.on("connection", async (socket) => {
     socket.join(`${socket.data.user.id}`);
+
+    const userChats = await db
+        .select({ id: chats.id })
+        .from(chats)
+        .where(
+            inArray(
+                chats.id,
+                db
+                    .select({ id: chatMembers.chat })
+                    .from(chatMembers)
+                    .where(eq(chatMembers.user, socket.data.user.id)),
+            ),
+        );
+
+    socket.join(userChats.map((chat) => `chat-${chat.id}`));
 
     const connectedFriends = await db
         .select({ id: users.id, username: users.username })
@@ -139,6 +154,30 @@ io.on("connection", async (socket) => {
                 .to(idsOfConnectedFriends)
                 .emit("friend_disconnected", socket.data.user);
         }
+    });
+
+    socket.on("typing", async (event: { chat: number; typing: boolean }) => {
+        const [member] = await db
+            .select()
+            .from(chatMembers)
+            .where(
+                and(
+                    eq(chatMembers.chat, event.chat),
+                    eq(chatMembers.user, socket.data.user.id),
+                ),
+            );
+
+        if (!member) {
+            return;
+        }
+
+        socket
+            .to(`chat-${event.chat}`)
+            .emit(`chat-${event.chat}:member_typing`, {
+                id: socket.data.user.id,
+                username: socket.data.user.username,
+                typing: event.typing,
+            });
     });
 });
 
