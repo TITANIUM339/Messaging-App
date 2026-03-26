@@ -9,6 +9,11 @@ import { useFetcher, useLoaderData } from "react-router";
 import { twMerge } from "tailwind-merge";
 import type { Message } from "../../types/type";
 
+interface Member {
+    id: number;
+    username: string;
+}
+
 export default function Chat() {
     const data = useLoaderData<{
         chat: {
@@ -25,6 +30,7 @@ export default function Chat() {
 
     const [messages, setMessages] = useState(data.messages);
     const [scrollToBottom, setScrollToBottom] = useState(false);
+    const [membersTyping, setMembersTyping] = useState<Member[]>([]);
 
     const connectedFriends = use(ConnectedFriendsContext);
 
@@ -33,6 +39,7 @@ export default function Chat() {
     const anchorRef = useRef<null | HTMLDivElement>(null);
     const messagesContainerRef = useRef<null | HTMLDivElement>(null);
     const formRef = useRef<null | HTMLFormElement>(null);
+    const timeoutRef = useRef<null | number>(null);
 
     useEffect(() => anchorRef.current?.scrollIntoView(), [fetcher.state]);
 
@@ -54,6 +61,8 @@ export default function Chat() {
             formRef.current?.reset();
         }
     }, [fetcher.state]);
+
+    const chatId = data.chat?.privateChat?.id ?? data?.chat?.groupChat?.id;
 
     useEffect(() => {
         async function updateMessages(message: Message) {
@@ -84,14 +93,35 @@ export default function Chat() {
             setScrollToBottom(isScrolledToBottom);
         }
 
-        const chatId = data.chat?.privateChat?.id ?? data?.chat?.groupChat?.id;
-
         api.socket.on(`chat-${chatId}:new_message`, updateMessages);
 
         return () => {
             api.socket.off(`chat-${chatId}:new_message`, updateMessages);
         };
-    }, [data.chat]);
+    }, [chatId]);
+
+    useEffect(() => {
+        function updateMembersTyping(event: Member & { typing: boolean }) {
+            if (event.typing) {
+                setMembersTyping((prev) => [
+                    ...prev,
+                    { id: event.id, username: event.username },
+                ]);
+
+                return;
+            }
+
+            setMembersTyping((prev) => [
+                ...prev.filter((member) => member.id !== event.id),
+            ]);
+        }
+
+        api.socket.on(`chat-${chatId}:member_typing`, updateMembersTyping);
+
+        return () => {
+            api.socket.off(`chat-${chatId}:member_typing`, updateMembersTyping);
+        };
+    }, [chatId]);
 
     const chatName =
         data.chat?.privateChat?.username ?? data?.chat?.groupChat?.title;
@@ -101,7 +131,7 @@ export default function Chat() {
             <div className="flex items-center border-b border-zinc-700 pt-2 pr-6 pb-2 pl-6">
                 <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
                     <div className="relative">
-                        <div className="h-6 w-6 overflow-hidden rounded-full">
+                        <div className="size-8 overflow-hidden rounded-full">
                             <img
                                 className="object-cover"
                                 src={`https://api.dicebear.com/9.x/identicon/svg?seed=${chatName}`}
@@ -125,6 +155,17 @@ export default function Chat() {
                         <h1 className="truncate text-lg font-medium">
                             {chatName}
                         </h1>
+                        <p className="truncate text-sm text-zinc-400">
+                            {membersTyping.length
+                                ? membersTyping
+                                      .map((member) =>
+                                          data.chat.privateChat
+                                              ? "Typing..."
+                                              : `${member.username} Typing...`,
+                                      )
+                                      .join(", ")
+                                : "—"}
+                        </p>
                     </section>
                 </div>
             </div>
@@ -138,7 +179,7 @@ export default function Chat() {
                             key={message.id}
                             className="grid grid-cols-[min-content_1fr] gap-2 pt-2 pr-6 pb-2 pl-6"
                         >
-                            <div className="h-10 w-10 overflow-hidden rounded-full">
+                            <div className="size-12 overflow-hidden rounded-full">
                                 <img
                                     className="object-cover"
                                     src={`https://api.dicebear.com/9.x/identicon/svg?seed=${message.senderUsername}`}
@@ -184,6 +225,36 @@ export default function Chat() {
                             name="message"
                             placeholder={`Message ${chatName}`}
                             required
+                            onChange={() => {
+                                if (typeof timeoutRef.current !== "number") {
+                                    timeoutRef.current = setTimeout(() => {
+                                        api.socket.emit("typing", {
+                                            chat: chatId,
+                                            typing: false,
+                                        });
+
+                                        timeoutRef.current = null;
+                                    }, 5000);
+
+                                    api.socket.emit("typing", {
+                                        chat: chatId,
+                                        typing: true,
+                                    });
+
+                                    return;
+                                }
+
+                                clearTimeout(timeoutRef.current);
+
+                                timeoutRef.current = setTimeout(() => {
+                                    api.socket.emit("typing", {
+                                        chat: chatId,
+                                        typing: false,
+                                    });
+
+                                    timeoutRef.current = null;
+                                }, 5000);
+                            }}
                         ></textarea>
                         <Button
                             className="self-start p-3"
