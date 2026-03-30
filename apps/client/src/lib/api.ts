@@ -1,5 +1,4 @@
 import { jwtDecode } from "jwt-decode";
-import type { PrivateKey } from "openpgp";
 import { io } from "socket.io-client";
 import { AccessToken, User } from "./schema";
 
@@ -8,18 +7,10 @@ class Api {
     #accessToken;
     #socket;
 
-    privateKey;
-
-    constructor(
-        apiURL: string,
-        accessToken?: null | string,
-        privateKey?: null | PrivateKey,
-    ) {
+    constructor(apiURL: string, accessToken?: null | string) {
         this.#apiURL = apiURL;
         this.#accessToken = accessToken ?? null;
         this.#socket = io(apiURL, { autoConnect: false });
-
-        this.privateKey = privateKey ?? null;
 
         if (accessToken) {
             this.#socket.auth = { token: accessToken };
