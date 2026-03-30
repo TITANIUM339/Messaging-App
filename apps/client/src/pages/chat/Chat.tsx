@@ -57,7 +57,7 @@ export default function Chat() {
     }, [data.messages]);
 
     useEffect(() => {
-        if (fetcher.state === "submitting") {
+        if (fetcher.state !== "idle") {
             formRef.current?.reset();
         }
     }, [fetcher.state]);
