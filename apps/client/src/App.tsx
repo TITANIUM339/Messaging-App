@@ -1,3 +1,4 @@
+import loaderAuthGuard from "@lib/loaderAuthGuard";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import Auth from "./layouts/Auth";
@@ -14,7 +15,7 @@ import Signup, { signupAction } from "./pages/signup";
 const router = createBrowserRouter([
     {
         path: "/",
-        loader: rootLoader,
+        loader: loaderAuthGuard(rootLoader),
         Component: Root,
         children: [
             {
@@ -28,13 +29,13 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "pending",
-                        loader: pendingLoader,
+                        loader: loaderAuthGuard(pendingLoader),
                         Component: Pending,
                         action: pendingAction,
                     },
                     {
                         index: true,
-                        loader: allLoader,
+                        loader: loaderAuthGuard(allLoader),
                         Component: All,
                         action: allAction,
                     },
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "chats/:chatId",
-                loader: chatLoader,
+                loader: loaderAuthGuard(chatLoader),
                 Component: Chat,
                 action: chatAction,
                 shouldRevalidate: ({ formMethod }) =>
