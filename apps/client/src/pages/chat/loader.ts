@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/only-throw-error */
 import api from "@lib/api";
-import { decrypt, readMessage } from "openpgp";
+import { decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
 import type { LoaderFunctionArgs } from "react-router";
 import type { Message } from "../../types/type";
 
@@ -20,6 +20,13 @@ export default async function loader({ params }: LoaderFunctionArgs) {
 
     const messages = (await response1.json()) as Message[];
 
+    const privateKey = await decryptKey({
+        privateKey: await readPrivateKey({
+            armoredKey: localStorage.getItem(`key-${api.user?.id}`)!,
+        }),
+        passphrase: api.user?.passphrase,
+    });
+
     return {
         messages: await Promise.all(
             messages.map(async (message) => {
@@ -30,7 +37,7 @@ export default async function loader({ params }: LoaderFunctionArgs) {
                             message: await readMessage({
                                 armoredMessage: message.content,
                             }),
-                            decryptionKeys: api.privateKey!,
+                            decryptionKeys: privateKey,
                         })
                     ).data as string,
                 };

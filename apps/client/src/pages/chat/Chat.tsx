@@ -2,7 +2,7 @@ import Button from "@components/Button";
 import { ConnectedFriendsContext } from "@components/ConnectedFriendsContext";
 import Spinner from "@components/Spinner";
 import api from "@lib/api";
-import { decrypt, readMessage } from "openpgp";
+import { decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
 import { use, useEffect, useRef, useState } from "react";
 import { BsFillSendFill } from "react-icons/bs";
 import { useFetcher, useLoaderData } from "react-router";
@@ -66,12 +66,19 @@ export default function Chat() {
 
     useEffect(() => {
         async function updateMessages(message: Message) {
+            const privateKey = await decryptKey({
+                privateKey: await readPrivateKey({
+                    armoredKey: localStorage.getItem(`key-${api.user?.id}`)!,
+                }),
+                passphrase: api.user?.passphrase,
+            });
+
             const content = (
                 await decrypt({
                     message: await readMessage({
                         armoredMessage: message.content,
                     }),
-                    decryptionKeys: api.privateKey!,
+                    decryptionKeys: privateKey,
                 })
             ).data as string;
 
