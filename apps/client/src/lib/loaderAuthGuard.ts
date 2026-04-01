@@ -7,7 +7,7 @@ import { redirect } from "react-router";
 export default function loaderAuthGuard(loader: LoaderFunction) {
     return async (args: LoaderFunctionArgs) => {
         if (!api.isLoggedIn) {
-            return redirect("/login");
+            throw redirect("/login");
         }
 
         const privateKey = localStorage.getItem(`key-${api.user?.id}`);
