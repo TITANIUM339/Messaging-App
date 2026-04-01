@@ -9,7 +9,7 @@ import Friends from "./pages/friends";
 import Login, { loginAction } from "./pages/login";
 import Pending, { pendingAction, pendingLoader } from "./pages/pending";
 import { pgpAction } from "./pages/pgp";
-import Root, { rootLoader } from "./pages/root";
+import Root, { ErrorBoundary, rootLoader } from "./pages/root";
 import Signup, { signupAction } from "./pages/signup";
 
 const router = createBrowserRouter([
@@ -17,6 +17,7 @@ const router = createBrowserRouter([
         path: "/",
         loader: loaderAuthGuard(rootLoader),
         Component: Root,
+        ErrorBoundary: ErrorBoundary,
         children: [
             {
                 path: "friends",
