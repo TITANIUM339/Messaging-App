@@ -41,7 +41,9 @@ export default function Chat() {
     const formRef = useRef<null | HTMLFormElement>(null);
     const timeoutRef = useRef<null | number>(null);
 
-    useEffect(() => anchorRef.current?.scrollIntoView(), [fetcher.state]);
+    useEffect(() => {
+        anchorRef.current?.scrollIntoView();
+    }, [fetcher.state]);
 
     useEffect(() => {
         if (scrollToBottom) {
@@ -148,7 +150,7 @@ export default function Chat() {
                         {data.chat.privateChat ? (
                             <div
                                 className={twMerge(
-                                    "absolute right-0 bottom-0 size-3 translate-[3px] rounded-full border-2 border-zinc-800 bg-zinc-500",
+                                    "absolute right-0 bottom-0 size-3 translate-0.75 rounded-full border-2 border-zinc-800 bg-zinc-500",
                                     connectedFriends.some(
                                         (connectedFriend) =>
                                             connectedFriend.id ===
